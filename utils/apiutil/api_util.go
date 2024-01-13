@@ -51,3 +51,14 @@ func ApiResponseNotFound(c *gin.Context, err error, messages ...string) {
 		Message: messages[0],
 	})
 }
+
+func ApiResponseUnauthorized(c *gin.Context, err error, messages ...string) {
+	if len(messages) == 0 {
+		messages = append(messages, "")
+	}
+	c.AbortWithStatusJSON(http.StatusUnauthorized, models.HttpResponseError{
+		Code:    http.StatusUnauthorized,
+		Error:   err.Error(),
+		Message: messages[0],
+	})
+}

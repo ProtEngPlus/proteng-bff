@@ -3,6 +3,8 @@ package apis
 import (
 	"os"
 
+	"proteng-bff/middleware"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,7 +15,7 @@ func InitRouter(r *gin.Engine) {
 	userRouter.GET("/users", Forward(usermgmtUrl+"/users"))
 	userRouter.GET("/users/:id", func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.Param("id"))(c) })
 	userRouter.POST("/users", Forward(usermgmtUrl+"/users"))
-	userRouter.PUT("/users/:id", func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.Param("id"))(c) })
+	userRouter.PUT("/users/:id", middleware.AuthenticateUser(), func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.Param("id"))(c) })
 	userRouter.DELETE("/users/:id", func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.Param("id"))(c) })
 	userRouter.POST("/auth/login", Forward(usermgmtUrl+"/auth/login"))
 
