@@ -19,5 +19,21 @@ func InitRouter(r *gin.Engine) {
 	userRouter.DELETE("/users/:id", func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.Param("id"))(c) })
 	userRouter.POST("/auth/login", Forward(usermgmtUrl+"/auth/login"))
 
+	conductorRouter := r.Group("/proteng-conductor")
+	conductorUrl := os.Getenv("CONDUCTOR_URL")
+	conductorRouter.GET("/jobs", Forward(conductorUrl+"/jobs"))
+	conductorRouter.GET("/jobs/:id", func(c *gin.Context) { Forward(conductorUrl + "/jobs/" + c.Param("id"))(c) })
+	conductorRouter.POST("/jobs", Forward(conductorUrl+"/jobs"))
+	conductorRouter.PUT("/jobs/:id", func(c *gin.Context) { Forward(conductorUrl + "/jobs/" + c.Param("id"))(c) })
+	conductorRouter.DELETE("/jobs/:id", func(c *gin.Context) { Forward(conductorUrl + "/jobs/" + c.Param("id"))(c) })
+	conductorRouter.POST("/jobs/:id/run", func(c *gin.Context) { Forward(conductorUrl + "/jobs/" + c.Param("id") + "/run")(c) })
+	conductorRouter.POST("/jobs/:id/:stage", func(c *gin.Context) { Forward(conductorUrl + "/jobs/" + c.Param("id") + "/" + c.Param("stage"))(c) })
+
+	conductorRouter.GET("/mutations", Forward(conductorUrl+"/mutations"))
+	conductorRouter.GET("/mutations/:id", func(c *gin.Context) { Forward(conductorUrl + "/mutations/" + c.Param("id"))(c) })
+	conductorRouter.POST("/mutations", Forward(conductorUrl+"/mutations"))
+	conductorRouter.PUT("/mutations/:id", func(c *gin.Context) { Forward(conductorUrl + "/mutations/" + c.Param("id"))(c) })
+	conductorRouter.DELETE("/mutations/:id", func(c *gin.Context) { Forward(conductorUrl + "/mutations/" + c.Param("id"))(c) })
+
 	r.GET("/cats", ForwardNoStrict("https://catfact.ninja/fact"))
 }
