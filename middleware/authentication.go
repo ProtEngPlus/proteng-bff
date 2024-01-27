@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"fmt"
 	"os"
+	"slices"
 	"strings"
 
 	"proteng-bff/utils"
@@ -29,13 +31,31 @@ func AuthenticateUser() gin.HandlerFunc {
 			return
 		}
 
-		sub, err := utils.ValidateToken(access_token, os.Getenv("ACCESS_TOKEN_PUBLIC_KEY"))
+		sub, role, err := utils.ValidateToken(access_token, os.Getenv("ACCESS_TOKEN_PUBLIC_KEY"))
 		if err != nil {
 			apiutil.ApiResponseUnauthorized(ctx, err)
 			return
 		}
 
 		ctx.Set("userId", sub)
+		ctx.Set("role", role)
+		ctx.Next()
+	}
+}
+
+func Authorize(roles ...string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		role, exists := ctx.Get("role")
+		if !exists {
+			apiutil.ApiResponseUnauthorized(ctx, fmt.Errorf("User not authenticated"))
+			return
+		}
+
+		if !slices.Contains(roles, role.(string)) {
+			apiutil.ApiResponseForbidden(ctx, fmt.Errorf("Insufficient permissions"))
+			return
+		}
+
 		ctx.Next()
 	}
 }
