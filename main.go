@@ -43,7 +43,7 @@ func CORSMiddleware() gin.HandlerFunc {
 	return cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:3000", os.Getenv("FRONTEND_URL")},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Type"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "Cache-Control", "X-Requested-With"},
 		ExposeHeaders:    []string{"Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "origin", "Cache-Control", "X-Requested-With"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
