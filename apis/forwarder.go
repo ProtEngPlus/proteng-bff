@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"proteng-bff/models"
-	"proteng-bff/utils/apiutil"
+	"github.com/protengplus/proteng-bff/models"
+	"github.com/protengplus/proteng-bff/utils/apiutil"
 )
 
 // Forward the request to another service with the common response format

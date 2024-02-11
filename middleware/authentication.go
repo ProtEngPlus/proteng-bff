@@ -2,12 +2,12 @@ package middleware
 
 import (
 	"fmt"
-	"os"
 	"slices"
 	"strings"
 
-	"proteng-bff/utils"
-	"proteng-bff/utils/apiutil"
+	"github.com/protengplus/proteng-bff/configs"
+	"github.com/protengplus/proteng-bff/utils"
+	"github.com/protengplus/proteng-bff/utils/apiutil"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,7 +31,7 @@ func Authenticate() gin.HandlerFunc {
 			return
 		}
 
-		sub, role, err := utils.ValidateToken(access_token, os.Getenv("ACCESS_TOKEN_PUBLIC_KEY"))
+		sub, role, err := utils.ValidateToken(access_token, configs.Config.AccessTokenPublicKey)
 		if err != nil {
 			apiutil.ApiResponseUnauthorized(ctx, err)
 			return

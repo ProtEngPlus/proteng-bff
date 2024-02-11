@@ -1,21 +1,24 @@
 package main
 
 import (
-	"log"
-	"os"
+	"fmt"
 	"time"
 
-	"proteng-bff/apis"
-	"proteng-bff/configs"
+	"github.com/protengplus/proteng-bff/apis"
+	"github.com/protengplus/proteng-bff/configs"
+	"github.com/protengplus/proteng-bff/internal/logger"
 
 	"github.com/gin-contrib/cors"
+	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	logger.InitZap()
 	configs.AutomaticLoadEnv()
 
-	r := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.New()
 
 	// Health Check Endpoint
 	r.GET("/health", func(c *gin.Context) {
@@ -25,23 +28,33 @@ func main() {
 	// CORS
 	r.Use(CORSMiddleware())
 
+	// Logger
+	r.Use(ginzap.GinzapWithConfig(logger.Zap, &ginzap.Config{
+		TimeFormat: time.RFC3339,
+		UTC:        true,
+		SkipPaths:  []string{"/metrics", "/health"},
+	}))
+
 	// Init Router
 	apis.InitRouter(r)
 
+	// Panic Recovery
+	r.Use(ginzap.RecoveryWithZap(logger.Zap, true))
+
 	// Start Server
-	httpPort := os.Getenv("HTTP_PORT")
+	httpPort := configs.Config.HttpPort
 	if httpPort == "" {
 		httpPort = "8080"
 	}
 	err := r.Run(":" + httpPort)
 	if err != nil {
-		log.Fatalf("Error starting server: %v", err)
+		logger.Zap.Fatal(fmt.Sprintf("Error starting server: %v", err))
 	}
 }
 
 func CORSMiddleware() gin.HandlerFunc {
 	return cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:3000", os.Getenv("FRONTEND_URL")},
+		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:3000", configs.Config.FrontendUrl},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "Cache-Control", "X-Requested-With"},
 		ExposeHeaders:    []string{"Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "origin", "Cache-Control", "X-Requested-With"},
