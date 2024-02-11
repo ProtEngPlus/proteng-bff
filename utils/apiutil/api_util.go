@@ -3,7 +3,7 @@ package apiutil
 import (
 	"net/http"
 
-	"proteng-bff/models"
+	"github.com/protengplus/proteng-bff/models"
 
 	"github.com/gin-gonic/gin"
 )

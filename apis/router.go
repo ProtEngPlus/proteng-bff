@@ -1,9 +1,8 @@
 package apis
 
 import (
-	"os"
-
-	"proteng-bff/middleware"
+	"github.com/protengplus/proteng-bff/configs"
+	"github.com/protengplus/proteng-bff/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,7 +11,7 @@ func InitRouter(r *gin.Engine) {
 
 	userRouter := r.Group("/proteng-user-mgmt")
 
-	usermgmtUrl := os.Getenv("USER_MGMT_URL")
+	usermgmtUrl := configs.Config.UserMgmtUrl
 	userRouter.GET("/users", Forward(usermgmtUrl+"/users"))
 	userRouter.GET("/users/:id", func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.Param("id"))(c) })
 	userRouter.POST("/users", Forward(usermgmtUrl+"/users"))
@@ -30,7 +29,7 @@ func InitRouter(r *gin.Engine) {
 
 	conductorRouter := r.Group("/proteng-conductor")
 
-	conductorUrl := os.Getenv("CONDUCTOR_URL")
+	conductorUrl := configs.Config.ConductorUrl
 	conductorRouter.GET("/jobs", Forward(conductorUrl+"/jobs"))
 	conductorRouter.GET("/jobs/:id", middleware.Authenticate(), func(c *gin.Context) { Forward(conductorUrl + "/jobs/" + c.Param("id"))(c) })
 	conductorRouter.POST("/jobs", middleware.Authenticate(), middleware.Authorize("user"), Forward(conductorUrl+"/jobs"))
