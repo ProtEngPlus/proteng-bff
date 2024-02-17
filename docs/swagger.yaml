@@ -1,0 +1,39 @@
+definitions:
+  models.HttpResponseOK:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /health:
+    get:
+      description: Check the health of the service
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+      summary: Health Check Endpoint
+  /helloworld:
+    get:
+      consumes:
+      - application/json
+      description: do ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: ping example
+      tags:
+      - example
+swagger: "2.0"
