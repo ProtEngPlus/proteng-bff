@@ -12,25 +12,29 @@ func InitRouter(r *gin.Engine) {
 	userRouter := r.Group("/proteng-user-mgmt")
 
 	usermgmtUrl := configs.Config.UserMgmtUrl
-	userRouter.GET("/users", Forward(usermgmtUrl+"/users"))
-	userRouter.GET("/users/:id", func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.Param("id"))(c) })
+	userRouter.GET("/users", middleware.Authenticate(), middleware.Authorize("admin"), Forward(usermgmtUrl+"/users"))
+	userRouter.GET("/users/:id", middleware.Authenticate(), middleware.Authorize("admin"), func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.Param("id"))(c) })
 	userRouter.POST("/users", Forward(usermgmtUrl+"/users"))
-	userRouter.PUT("/users/:id", middleware.Authenticate(), func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.Param("id"))(c) })
-	userRouter.DELETE("/users/:id", func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.Param("id"))(c) })
+	userRouter.PUT("/users/:id", middleware.Authenticate(), middleware.Authorize("admin"), func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.Param("id"))(c) })
+	userRouter.DELETE("/users/:id", middleware.Authenticate(), middleware.Authorize("admin"), func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.Param("id"))(c) })
 	userRouter.POST("/auth/login", Forward(usermgmtUrl+"/auth/login"))
 	userRouter.GET("/me", middleware.Authenticate(), func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.GetString("userId"))(c) })
+	userRouter.PUT("/me", middleware.Authenticate(), func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.GetString("userId"))(c) })
+	userRouter.DELETE("/me", middleware.Authenticate(), func(c *gin.Context) { Forward(usermgmtUrl + "/users/" + c.GetString("userId"))(c) })
 
-	userRouter.GET("/admins", Forward(usermgmtUrl+"/admins"))
-	userRouter.GET("/admins/:id", func(c *gin.Context) { Forward(usermgmtUrl + "/admins/" + c.Param("id"))(c) })
+	userRouter.GET("/admins", middleware.Authenticate(), middleware.Authorize("admin"), Forward(usermgmtUrl+"/admins"))
+	userRouter.GET("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), func(c *gin.Context) { Forward(usermgmtUrl + "/admins/" + c.Param("id"))(c) })
 	userRouter.POST("/admins", Forward(usermgmtUrl+"/admins"))
-	userRouter.PUT("/admins/:id", middleware.Authenticate(), func(c *gin.Context) { Forward(usermgmtUrl + "/admins/" + c.Param("id"))(c) })
-	userRouter.DELETE("/admins/:id", func(c *gin.Context) { Forward(usermgmtUrl + "/admins/" + c.Param("id"))(c) })
+	userRouter.PUT("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), func(c *gin.Context) { Forward(usermgmtUrl + "/admins/" + c.Param("id"))(c) })
+	userRouter.DELETE("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), func(c *gin.Context) { Forward(usermgmtUrl + "/admins/" + c.Param("id"))(c) })
 	userRouter.POST("/auth/login/admin", Forward(usermgmtUrl+"/auth/login/admin"))
 
 	conductorRouter := r.Group("/proteng-conductor")
 
 	conductorUrl := configs.Config.ConductorUrl
-	conductorRouter.GET("/jobs", Forward(conductorUrl+"/jobs"))
+	conductorRouter.GET("/jobs", middleware.Authenticate(), middleware.Authorize("user"), func(c *gin.Context) {
+		Forward(conductorUrl+"/jobs?"+c.Request.URL.RawQuery, map[string]interface{}{"user_id": c.GetString("userId")})(c)
+	})
 	conductorRouter.GET("/jobs/:id", middleware.Authenticate(), func(c *gin.Context) { Forward(conductorUrl + "/jobs/" + c.Param("id"))(c) })
 	conductorRouter.POST("/jobs", middleware.Authenticate(), middleware.Authorize("user"), Forward(conductorUrl+"/jobs"))
 	conductorRouter.PUT("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user", "staff"), func(c *gin.Context) { Forward(conductorUrl + "/jobs/" + c.Param("id"))(c) })
@@ -43,6 +47,4 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.POST("/mutations", Forward(conductorUrl+"/mutations"))
 	conductorRouter.PUT("/mutations/:id", func(c *gin.Context) { Forward(conductorUrl + "/mutations/" + c.Param("id"))(c) })
 	conductorRouter.DELETE("/mutations/:id", func(c *gin.Context) { Forward(conductorUrl + "/mutations/" + c.Param("id"))(c) })
-
-	r.GET("/cats", ForwardNoStrict("https://catfact.ninja/fact"))
 }
