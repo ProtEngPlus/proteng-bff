@@ -20,7 +20,7 @@ func Forward(baseUrl string) func(c *gin.Context) {
 
 func ForwardAddParam(baseUrl string, params map[string]interface{}) func(c *gin.Context) {
 	return func(gctx *gin.Context) {
-		// Construct URL with query parameters
+
 		u, err := url.Parse(baseUrl)
 		if err != nil {
 			apiutil.ApiResponseInternalServerError(gctx, err)
@@ -33,7 +33,6 @@ func ForwardAddParam(baseUrl string, params map[string]interface{}) func(c *gin.
 		}
 		u.RawQuery = q.Encode()
 
-		// Call ForwardStrict with the modified URL
 		ForwardStrict[models.HttpResponse, interface{}](u.String())(gctx)
 	}
 }
@@ -75,6 +74,53 @@ func ForwardStrict[Resp any, Req any](url string) func(c *gin.Context) {
 			apiutil.ApiResponseInternalServerError(gctx, err)
 			return
 		}
+		if resp.StatusCode != http.StatusOK {
+			gctx.JSON(http.StatusInternalServerError, respBody)
+			return
+		}
+		gctx.JSON(http.StatusOK, respBody)
+	}
+}
+
+func ForwardAddBody(baseUrl string, requestBody map[string]interface{}) func(c *gin.Context) {
+	return func(gctx *gin.Context) {
+		var body interface{}
+		if err := gctx.BindJSON(&body); err != nil {
+			apiutil.ApiResponseErrorBadRequest(gctx, err)
+			return
+		}
+
+		for key, value := range requestBody {
+			body.(map[string]interface{})[key] = value
+		}
+
+		bodyBuffer, err := json.Marshal(body)
+		if err != nil {
+			apiutil.ApiResponseInternalServerError(gctx, err)
+			return
+		}
+
+		req, err := http.NewRequestWithContext(gctx, gctx.Request.Method, baseUrl, bytes.NewReader(bodyBuffer))
+		if err != nil {
+			apiutil.ApiResponseInternalServerError(gctx, err)
+			return
+		}
+
+		client := http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			apiutil.ApiResponseInternalServerError(gctx, err)
+			return
+		}
+
+		defer resp.Body.Close()
+
+		var respBody models.HttpResponse
+		if err := json.NewDecoder(resp.Body).Decode(&respBody); err != nil {
+			apiutil.ApiResponseInternalServerError(gctx, err)
+			return
+		}
+
 		if resp.StatusCode != http.StatusOK {
 			gctx.JSON(http.StatusInternalServerError, respBody)
 			return
