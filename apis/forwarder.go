@@ -14,8 +14,8 @@ import (
 )
 
 // Forward the request to another service with the common response format
-func Forward(baseUrl string) func(c *gin.Context) {
-	return ForwardStrict[models.HttpResponse, interface{}](baseUrl)
+func Forward(url string) func(c *gin.Context) {
+	return ForwardStrict[models.HttpResponse, interface{}](url)
 }
 
 func ForwardAddParam(baseUrl string, params map[string]interface{}) func(c *gin.Context) {
@@ -82,7 +82,7 @@ func ForwardStrict[Resp any, Req any](url string) func(c *gin.Context) {
 	}
 }
 
-func ForwardAddBody(baseUrl string, requestBody map[string]interface{}) func(c *gin.Context) {
+func ForwardAddBody(url string, requestBody map[string]interface{}) func(c *gin.Context) {
 	return func(gctx *gin.Context) {
 		var body interface{}
 		if err := gctx.BindJSON(&body); err != nil {
@@ -100,7 +100,7 @@ func ForwardAddBody(baseUrl string, requestBody map[string]interface{}) func(c *
 			return
 		}
 
-		req, err := http.NewRequestWithContext(gctx, gctx.Request.Method, baseUrl, bytes.NewReader(bodyBuffer))
+		req, err := http.NewRequestWithContext(gctx, gctx.Request.Method, url, bytes.NewReader(bodyBuffer))
 		if err != nil {
 			apiutil.ApiResponseInternalServerError(gctx, err)
 			return
