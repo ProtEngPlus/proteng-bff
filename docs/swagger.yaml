@@ -1,4 +1,13 @@
 definitions:
+  models.HttpResponseError:
+    properties:
+      code:
+        type: integer
+      error:
+        type: string
+      message:
+        type: string
+    type: object
   models.HttpResponseOK:
     properties:
       code:
@@ -7,8 +16,43 @@ definitions:
       message:
         type: string
     type: object
+  models.SignInInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.User:
+    properties:
+      citizen_id:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        items:
+          type: string
+        type: array
+      surname:
+        type: string
+    type: object
 info:
-  contact: {}
+  contact:
+    email: proteng.plus@gmail.com
+    name: Proteng API Support
+  title: Proteng API
+  version: "1.0"
 paths:
   /health:
     get:
@@ -21,19 +65,279 @@ paths:
           schema:
             $ref: '#/definitions/models.HttpResponseOK'
       summary: Health Check Endpoint
-  /helloworld:
-    get:
+      tags:
+      - healthchack
+  /proteng-user-mgmt/auth/login:
+    post:
       consumes:
       - application/json
-      description: do ping
+      description: Signs in a user by validating the provided credentials
+      parameters:
+      - description: User credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignInInput'
       produces:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Successful operation
           schema:
-            type: string
-      summary: ping example
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Sign in a user
       tags:
-      - example
+      - authentication
+  /proteng-user-mgmt/me:
+    delete:
+      description: Delete the currently authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete the currently authenticated user
+      tags:
+      - user management
+    get:
+      description: Retrieve details of the currently authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get current user
+      tags:
+      - user management
+    put:
+      consumes:
+      - application/json
+      description: Update details of the currently authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update the currently authenticated user
+      tags:
+      - user management
+  /proteng-user-mgmt/users:
+    get:
+      description: Retrieve a list of all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve all users
+      tags:
+      - user management
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user with the provided details
+      parameters:
+      - description: User object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Create a new user
+      tags:
+      - user management
+  /proteng-user-mgmt/users/{id}:
+    delete:
+      description: Delete a user by providing its ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a user
+      tags:
+      - user management
+    get:
+      description: Retrieve a user by providing its ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve a user by ID
+      tags:
+      - user management
+    put:
+      consumes:
+      - application/json
+      description: Update an existing user with the provided details
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing user
+      tags:
+      - user management
+securityDefinitions:
+  ApiKeyAuth:
+    in: Header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

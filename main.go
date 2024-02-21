@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/protengplus/proteng-bff/apis"
@@ -18,28 +17,18 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// PingExample godoc
-// @Summary ping example
-// @Schemes
-// @Description do ping
-// @Tags example
-// @Accept json
-// @Produce json
-// @Success 200 {string} Helloworld
-// @Router /helloworld [get]
-func Helloworld(g *gin.Context) {
-	g.JSON(http.StatusOK, "helloworld")
-}
+// @title Proteng API
+// @version 1.0
+// @description
 
-// HealthCheck godoc
-// @Summary Health Check Endpoint
-// @Description Check the health of the service
-// @Produce json
-// @Success 200 {object} models.HttpResponseOK "Successful operation"
-// @Router /health [get]
-func HealthCheck(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "ok"})
-}
+// @contact.name Proteng API Support
+// @contact.email proteng.plus@gmail.com
+
+// @SecurityDefinitions.apikey ApiKeyAuth
+// @In Header
+// @Name Authorization
+// @Type apiKey
+// @BearerFormat
 
 func main() {
 	logger.InitZap()
@@ -51,8 +40,6 @@ func main() {
 	docs.SwaggerInfo.BasePath = "/"
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
-
-	r.GET("/helloworld", Helloworld)
 
 	// Health Check Endpoint
 	r.GET("/health", HealthCheck)
@@ -93,4 +80,15 @@ func CORSMiddleware() gin.HandlerFunc {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	})
+}
+
+// HealthCheck godoc
+// @Summary Health Check Endpoint
+// @Description Check the health of the service
+// @Tags healthchack
+// @Produce json
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Router /health [get]
+func HealthCheck(c *gin.Context) {
+	c.JSON(200, gin.H{"message": "ok"})
 }
