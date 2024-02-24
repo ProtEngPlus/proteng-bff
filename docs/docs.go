@@ -137,6 +137,24 @@ const docTemplate = `{
                     "user management"
                 ],
                 "summary": "Update the currently authenticated user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User object",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserInput"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful operation",
@@ -255,7 +273,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/models.UserInput"
                         }
                     }
                 ],
@@ -369,7 +387,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/models.UserInput"
                         }
                     }
                 ],
@@ -503,16 +521,13 @@ const docTemplate = `{
                 }
             }
         },
-        "models.User": {
+        "models.UserInput": {
             "type": "object",
             "properties": {
                 "citizen_id": {
                     "type": "string"
                 },
                 "email": {
-                    "type": "string"
-                },
-                "id": {
                     "type": "string"
                 },
                 "name": {

@@ -45,7 +45,7 @@ func GetUserByID(c *gin.Context) {
 // @Tags user management
 // @Accept json
 // @Produce json
-// @Param user body models.User true "User object"
+// @Param user body models.UserInput true "User object"
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
 // @Failure 400 {object} models.HttpResponseError "Bad request"
 // @Failure 500 {object} models.HttpResponseError "Internal Server Error"
@@ -62,7 +62,7 @@ func CreateUser(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "User ID"
-// @Param user body models.User true "User object"
+// @Param user body models.UserInput true "User object"
 // @Security ApiKeyAuth
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
 // @Failure 400 {object} models.HttpResponseError "Bad request"
@@ -129,6 +129,8 @@ func GetMe(c *gin.Context) {
 // @Tags user management
 // @Accept json
 // @Produce json
+// @Param id path string true "User ID"
+// @Param user body models.UserInput true "User object"
 // @Security ApiKeyAuth
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
 // @Failure 400 {object} models.HttpResponseError "Bad request"
