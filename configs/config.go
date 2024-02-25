@@ -16,9 +16,9 @@ type config struct {
 	Env      string `envconfig:"ENV" default:"dev"`
 	HttpPort string `envconfig:"HTTP_PORT" default:"8080"`
 
-	UserMgmtUrl  string `envconfig:"USER_MGMT_URL" default:"http://localhost:8082"`
-	ConductorUrl string `envconfig:"CONDUCTOR_URL" default:"http://localhost:8081"`
-	FrontendUrl  string `envconfig:"FRONTEND_URL" default:"http://localhost:5173"`
+	UserMgmtUrl  string   `envconfig:"USER_MGMT_URL" default:"http://localhost:8082"`
+	ConductorUrl string   `envconfig:"CONDUCTOR_URL" default:"http://localhost:8081"`
+	FrontendUrls []string `envconfig:"FRONTEND_URLS" default:"http://localhost:5173"`
 
 	AccessTokenPublicKey string `envconfig:"ACCESS_TOKEN_PUBLIC_KEY" default:""`
 }
