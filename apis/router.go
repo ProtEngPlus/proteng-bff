@@ -21,6 +21,8 @@ func InitRouter(r *gin.Engine) {
 	userRouter.GET("/me", middleware.Authenticate(), GetMe)
 	userRouter.PUT("/me", middleware.Authenticate(), UpdateMe)
 	userRouter.DELETE("/me", middleware.Authenticate(), DeleteMe)
+	userRouter.POST("/auth/forgotpassword", ForgotPassword)
+	userRouter.PATCH("/auth/resetpassword/:resetToken", ResetPassword)
 
 	userRouter.GET("/admins", middleware.Authenticate(), middleware.Authorize("admin"), Forward(usermgmtUrl+"/admins"))
 	userRouter.GET("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), func(c *gin.Context) { Forward(usermgmtUrl + "/admins/" + c.Param("id"))(c) })

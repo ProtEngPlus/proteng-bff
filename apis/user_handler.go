@@ -158,3 +158,38 @@ func DeleteMe(c *gin.Context) {
 	userID := c.GetString("userId")
 	Forward(usermgmtUrl + "/users/" + userID)(c)
 }
+
+// ForgotPassword initiates the forgot password process by sending a reset email to the user
+// @Summary Initiate forgot password process
+// @Description Initiates the forgot password process by sending a reset email to the user
+// @Tags authentication
+// @Accept json
+// @Produce json
+// @Param body body models.ForgotPasswordInput true "User email"
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 400 {object} models.HttpResponseError "Bad request"
+// @Failure 403 {object} models.HttpResponseError "Forbidden"
+// @Failure 502 {object} models.HttpResponseError "Bad Gateway"
+// @Router /proteng-user-mgmt/auth/forgotpassword [post]
+func ForgotPassword(c *gin.Context) {
+	usermgmtUrl := configs.Config.UserMgmtUrl
+	Forward(usermgmtUrl + "/auth/forgotpassword")(c)
+}
+
+// ResetPassword resets the password using the provided reset token
+// @Summary Reset password
+// @Description Resets the password using the provided reset token
+// @Tags authentication
+// @Accept json
+// @Produce json
+// @Param resetToken path string true "Reset Token"
+// @Param body body models.ResetPasswordInput true "New password"
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 400 {object} models.HttpResponseError "Bad request"
+// @Failure 403 {object} models.HttpResponseError "Forbidden"
+// @Router /proteng-user-mgmt/users/{resetToken} [patch]
+func ResetPassword(c *gin.Context) {
+	usermgmtUrl := configs.Config.UserMgmtUrl
+	resetToken := c.Param("resetToken")
+	Forward(usermgmtUrl + "/auth/resetpassword/" + resetToken)(c)
+}

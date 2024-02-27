@@ -14,3 +14,11 @@ type SignInInput struct {
 	Password string `json:"password" bson:"password" binding:"required"`
 	Role     string `bson:"role" json:"role"`
 }
+
+type ForgotPasswordInput struct {
+	Email string `json:"email" binding:"required"`
+}
+
+type ResetPasswordInput struct {
+	Password string `json:"password" binding:"required"`
+}
