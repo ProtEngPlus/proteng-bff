@@ -51,4 +51,5 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.POST("/mutations", middleware.Authenticate(), middleware.Authorize("user"), Forward(conductorUrl+"/mutations"))
 	conductorRouter.PUT("/mutations/:id", middleware.Authenticate(), middleware.Authorize("user"), func(c *gin.Context) { Forward(conductorUrl + "/mutations/" + c.Param("id"))(c) })
 	conductorRouter.DELETE("/mutations/:id", middleware.Authenticate(), middleware.Authorize("user"), func(c *gin.Context) { Forward(conductorUrl + "/mutations/" + c.Param("id"))(c) })
+	conductorRouter.POST("/mutations/:id/run", middleware.Authenticate(), middleware.Authorize("user"), func(c *gin.Context) { Forward(conductorUrl + "/mutations/" + c.Param("id") + "/run")(c) })
 }
