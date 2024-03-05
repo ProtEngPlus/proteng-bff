@@ -1,4 +1,13 @@
 definitions:
+  models.AdminInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   models.ForgotPasswordInput:
     properties:
       email:
@@ -28,6 +37,16 @@ definitions:
       password:
         type: string
     required:
+    - password
+    type: object
+  models.SignInAdminInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
     - password
     type: object
   models.SignInInput:
@@ -78,7 +97,172 @@ paths:
             $ref: '#/definitions/models.HttpResponseOK'
       summary: Health Check Endpoint
       tags:
-      - healthchack
+      - Healthchack
+  /proteng-user-mgmt/admins:
+    get:
+      description: Retrieve a list of all admins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve all admins
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a new admin with the provided details
+      parameters:
+      - description: Admin object
+        in: body
+        name: admin
+        required: true
+        schema:
+          $ref: '#/definitions/models.AdminInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Create a new admin
+      tags:
+      - Admin
+  /proteng-user-mgmt/admins/{id}:
+    delete:
+      description: Delete an admin by providing its ID
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete an admin
+      tags:
+      - Admin
+    get:
+      description: Retrieve an admin by providing its ID
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve an admin by ID
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update an existing admin with the provided details
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Admin object
+        in: body
+        name: admin
+        required: true
+        schema:
+          $ref: '#/definitions/models.AdminInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing admin
+      tags:
+      - Admin
   /proteng-user-mgmt/auth/forgotpassword:
     post:
       consumes:
@@ -113,7 +297,7 @@ paths:
             $ref: '#/definitions/models.HttpResponseError'
       summary: Initiate forgot password process
       tags:
-      - authentication
+      - Authentication
   /proteng-user-mgmt/auth/login:
     post:
       consumes:
@@ -139,7 +323,68 @@ paths:
             $ref: '#/definitions/models.HttpResponseError'
       summary: Sign in a user
       tags:
-      - authentication
+      - Authentication
+  /proteng-user-mgmt/auth/login/admin:
+    post:
+      consumes:
+      - application/json
+      description: Signs in an admin by validating the provided credentials
+      parameters:
+      - description: Admin credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignInAdminInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Sign in an admin
+      tags:
+      - Authentication
+  /proteng-user-mgmt/auth/resetpassword/{resetToken}:
+    patch:
+      consumes:
+      - application/json
+      description: Resets the password using the provided reset token
+      parameters:
+      - description: Reset Token
+        in: path
+        name: resetToken
+        required: true
+        type: string
+      - description: New password
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.ResetPasswordInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Reset password
+      tags:
+      - Authentication
   /proteng-user-mgmt/me:
     delete:
       description: Delete the currently authenticated user
@@ -162,7 +407,7 @@ paths:
       - ApiKeyAuth: []
       summary: Delete the currently authenticated user
       tags:
-      - user management
+      - User management
     get:
       description: Retrieve details of the currently authenticated user
       produces:
@@ -188,7 +433,7 @@ paths:
       - ApiKeyAuth: []
       summary: Get current user
       tags:
-      - user management
+      - User management
     put:
       consumes:
       - application/json
@@ -228,7 +473,7 @@ paths:
       - ApiKeyAuth: []
       summary: Update the currently authenticated user
       tags:
-      - user management
+      - User management
   /proteng-user-mgmt/users:
     get:
       description: Retrieve a list of all users
@@ -251,7 +496,7 @@ paths:
       - ApiKeyAuth: []
       summary: Retrieve all users
       tags:
-      - user management
+      - User management
     post:
       consumes:
       - application/json
@@ -280,7 +525,7 @@ paths:
             $ref: '#/definitions/models.HttpResponseError'
       summary: Create a new user
       tags:
-      - user management
+      - User management
   /proteng-user-mgmt/users/{id}:
     delete:
       description: Delete a user by providing its ID
@@ -313,7 +558,7 @@ paths:
       - ApiKeyAuth: []
       summary: Delete a user
       tags:
-      - user management
+      - User management
     get:
       description: Retrieve a user by providing its ID
       parameters:
@@ -349,7 +594,7 @@ paths:
       - ApiKeyAuth: []
       summary: Retrieve a user by ID
       tags:
-      - user management
+      - User management
     put:
       consumes:
       - application/json
@@ -393,42 +638,7 @@ paths:
       - ApiKeyAuth: []
       summary: Update an existing user
       tags:
-      - user management
-  /proteng-user-mgmt/users/{resetToken}:
-    patch:
-      consumes:
-      - application/json
-      description: Resets the password using the provided reset token
-      parameters:
-      - description: Reset token
-        in: path
-        name: resetToken
-        required: true
-        type: string
-      - description: New password
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/models.ResetPasswordInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      summary: Reset password
-      tags:
-      - authentication
+      - User management
 securityDefinitions:
   ApiKeyAuth:
     in: Header

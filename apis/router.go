@@ -10,7 +10,7 @@ import (
 func InitRouter(r *gin.Engine) {
 
 	userRouter := r.Group("/proteng-user-mgmt")
-	usermgmtUrl := configs.Config.UserMgmtUrl
+	// usermgmtUrl := configs.Config.UserMgmtUrl
 
 	userRouter.GET("/users", middleware.Authenticate(), middleware.Authorize("admin"), GetAllUsers)
 	userRouter.GET("/users/:id", middleware.Authenticate(), middleware.Authorize("admin"), GetUserByID)
@@ -24,12 +24,12 @@ func InitRouter(r *gin.Engine) {
 	userRouter.POST("/auth/forgotpassword", ForgotPassword)
 	userRouter.PATCH("/auth/resetpassword/:resetToken", ResetPassword)
 
-	userRouter.GET("/admins", middleware.Authenticate(), middleware.Authorize("admin"), Forward(usermgmtUrl+"/admins"))
-	userRouter.GET("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), func(c *gin.Context) { Forward(usermgmtUrl + "/admins/" + c.Param("id"))(c) })
-	userRouter.POST("/admins", Forward(usermgmtUrl+"/admins"))
-	userRouter.PUT("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), func(c *gin.Context) { Forward(usermgmtUrl + "/admins/" + c.Param("id"))(c) })
-	userRouter.DELETE("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), func(c *gin.Context) { Forward(usermgmtUrl + "/admins/" + c.Param("id"))(c) })
-	userRouter.POST("/auth/login/admin", Forward(usermgmtUrl+"/auth/login/admin"))
+	userRouter.GET("/admins", middleware.Authenticate(), middleware.Authorize("admin"), GetAllAdmins)
+	userRouter.GET("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), GetAdminByID)
+	userRouter.POST("/admins", CreateAdmin)
+	userRouter.PUT("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), UpdateAdmin)
+	userRouter.DELETE("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), DeleteAdmin)
+	userRouter.POST("/auth/login/admin", SignInAdmin)
 
 	conductorRouter := r.Group("/proteng-conductor")
 	conductorUrl := configs.Config.ConductorUrl

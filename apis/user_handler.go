@@ -8,7 +8,7 @@ import (
 // GetAllUsers retrieves all users
 // @Summary Retrieve all users
 // @Description Retrieve a list of all users
-// @Tags user management
+// @Tags User management
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
@@ -23,7 +23,7 @@ func GetAllUsers(c *gin.Context) {
 // GetUserByID retrieves a user by ID
 // @Summary Retrieve a user by ID
 // @Description Retrieve a user by providing its ID
-// @Tags user management
+// @Tags User management
 // @Produce json
 // @Security ApiKeyAuth
 // @Param id path string true "User ID"
@@ -42,7 +42,7 @@ func GetUserByID(c *gin.Context) {
 // CreateUser creates a new user
 // @Summary Create a new user
 // @Description Creates a new user with the provided details
-// @Tags user management
+// @Tags User management
 // @Accept json
 // @Produce json
 // @Param user body models.UserInput true "User object"
@@ -58,7 +58,7 @@ func CreateUser(c *gin.Context) {
 // UpdateUser updates an existing user
 // @Summary Update an existing user
 // @Description Update an existing user with the provided details
-// @Tags user management
+// @Tags User management
 // @Accept json
 // @Produce json
 // @Param id path string true "User ID"
@@ -78,7 +78,7 @@ func UpdateUser(c *gin.Context) {
 // DeleteUser deletes a user by ID
 // @Summary Delete a user
 // @Description Delete a user by providing its ID
-// @Tags user management
+// @Tags User management
 // @Produce json
 // @Param id path string true "User ID"
 // @Security ApiKeyAuth
@@ -95,7 +95,7 @@ func DeleteUser(c *gin.Context) {
 // SignInUser signs in a user by validating credentials
 // @Summary Sign in a user
 // @Description Signs in a user by validating the provided credentials
-// @Tags authentication
+// @Tags Authentication
 // @Accept json
 // @Produce json
 // @Param credentials body models.SignInInput true "User credentials"
@@ -109,7 +109,7 @@ func SignInUser(c *gin.Context) {
 
 // @Summary Get current user
 // @Description Retrieve details of the currently authenticated user
-// @Tags user management
+// @Tags User management
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
@@ -126,7 +126,7 @@ func GetMe(c *gin.Context) {
 // UpdateMe updates the currently authenticated user
 // @Summary Update the currently authenticated user
 // @Description Update details of the currently authenticated user
-// @Tags user management
+// @Tags User management
 // @Accept json
 // @Produce json
 // @Param id path string true "User ID"
@@ -146,7 +146,7 @@ func UpdateMe(c *gin.Context) {
 // DeleteMe deletes the currently authenticated user
 // @Summary Delete the currently authenticated user
 // @Description Delete the currently authenticated user
-// @Tags user management
+// @Tags User management
 // @Produce json
 // @Security ApiKeyAuth
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
@@ -162,7 +162,7 @@ func DeleteMe(c *gin.Context) {
 // ForgotPassword initiates the forgot password process by sending a reset email to the user
 // @Summary Initiate forgot password process
 // @Description Initiates the forgot password process by sending a reset email to the user
-// @Tags authentication
+// @Tags Authentication
 // @Accept json
 // @Produce json
 // @Param body body models.ForgotPasswordInput true "User email"
@@ -179,7 +179,7 @@ func ForgotPassword(c *gin.Context) {
 // ResetPassword resets the password using the provided reset token
 // @Summary Reset password
 // @Description Resets the password using the provided reset token
-// @Tags authentication
+// @Tags Authentication
 // @Accept json
 // @Produce json
 // @Param resetToken path string true "Reset Token"
@@ -187,7 +187,7 @@ func ForgotPassword(c *gin.Context) {
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
 // @Failure 400 {object} models.HttpResponseError "Bad request"
 // @Failure 403 {object} models.HttpResponseError "Forbidden"
-// @Router /proteng-user-mgmt/users/{resetToken} [patch]
+// @Router /proteng-user-mgmt/auth/resetpassword/{resetToken} [patch]
 func ResetPassword(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	resetToken := c.Param("resetToken")

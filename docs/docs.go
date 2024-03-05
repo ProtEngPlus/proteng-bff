@@ -25,7 +25,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "healthchack"
+                    "Healthchack"
                 ],
                 "summary": "Health Check Endpoint",
                 "responses": {
@@ -33,6 +33,263 @@ const docTemplate = `{
                         "description": "Successful operation",
                         "schema": {
                             "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-user-mgmt/admins": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve a list of all admins",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Retrieve all admins",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new admin with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Create a new admin",
+                "parameters": [
+                    {
+                        "description": "Admin object",
+                        "name": "admin",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AdminInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-user-mgmt/admins/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve an admin by providing its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Retrieve an admin by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Admin ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update an existing admin with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Update an existing admin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Admin ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Admin object",
+                        "name": "admin",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AdminInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete an admin by providing its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Delete an admin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Admin ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
                         }
                     }
                 }
@@ -48,7 +305,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "authentication"
+                    "Authentication"
                 ],
                 "summary": "Initiate forgot password process",
                 "parameters": [
@@ -100,7 +357,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "authentication"
+                    "Authentication"
                 ],
                 "summary": "Sign in a user",
                 "parameters": [
@@ -130,6 +387,99 @@ const docTemplate = `{
                 }
             }
         },
+        "/proteng-user-mgmt/auth/login/admin": {
+            "post": {
+                "description": "Signs in an admin by validating the provided credentials",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Sign in an admin",
+                "parameters": [
+                    {
+                        "description": "Admin credentials",
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SignInAdminInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-user-mgmt/auth/resetpassword/{resetToken}": {
+            "patch": {
+                "description": "Resets the password using the provided reset token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Reset password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Reset Token",
+                        "name": "resetToken",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New password",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ResetPasswordInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/proteng-user-mgmt/me": {
             "get": {
                 "security": [
@@ -142,7 +492,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user management"
+                    "User management"
                 ],
                 "summary": "Get current user",
                 "responses": {
@@ -186,7 +536,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user management"
+                    "User management"
                 ],
                 "summary": "Update the currently authenticated user",
                 "parameters": [
@@ -245,7 +595,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user management"
+                    "User management"
                 ],
                 "summary": "Delete the currently authenticated user",
                 "responses": {
@@ -282,7 +632,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user management"
+                    "User management"
                 ],
                 "summary": "Retrieve all users",
                 "responses": {
@@ -315,7 +665,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user management"
+                    "User management"
                 ],
                 "summary": "Create a new user",
                 "parameters": [
@@ -363,7 +713,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user management"
+                    "User management"
                 ],
                 "summary": "Retrieve a user by ID",
                 "parameters": [
@@ -422,7 +772,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user management"
+                    "User management"
                 ],
                 "summary": "Update an existing user",
                 "parameters": [
@@ -487,7 +837,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "user management"
+                    "User management"
                 ],
                 "summary": "Delete a user",
                 "parameters": [
@@ -526,62 +876,23 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/proteng-user-mgmt/users/{resetToken}": {
-            "patch": {
-                "description": "Resets the password using the provided reset token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "authentication"
-                ],
-                "summary": "Reset password",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Reset token",
-                        "name": "resetToken",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "New password",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.ResetPasswordInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/models.HttpResponseOK"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/models.HttpResponseError"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "schema": {
-                            "$ref": "#/definitions/models.HttpResponseError"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
+        "models.AdminInput": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ForgotPasswordInput": {
             "type": "object",
             "required": [
@@ -625,6 +936,21 @@ const docTemplate = `{
                 "password"
             ],
             "properties": {
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SignInAdminInput": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
                 "password": {
                     "type": "string"
                 }

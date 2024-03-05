@@ -85,7 +85,7 @@ func CORSMiddleware() gin.HandlerFunc {
 // HealthCheck godoc
 // @Summary Health Check Endpoint
 // @Description Check the health of the service
-// @Tags healthchack
+// @Tags Healthchack
 // @Produce json
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
 // @Router /health [get]
