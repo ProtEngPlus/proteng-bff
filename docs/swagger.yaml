@@ -8,6 +8,28 @@ definitions:
       username:
         type: string
     type: object
+  models.DuplicateJobInput:
+    properties:
+      input_protein:
+        type: string
+      lab_result:
+        $ref: '#/definitions/models.LabResult'
+      meta:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      options:
+        additionalProperties: true
+        type: object
+      ref_job_id:
+        type: string
+    required:
+    - input_protein
+    - name
+    - options
+    type: object
   models.ForgotPasswordInput:
     properties:
       email:
@@ -31,6 +53,43 @@ definitions:
       data: {}
       message:
         type: string
+    type: object
+  models.JobInput:
+    properties:
+      input_protein:
+        type: string
+      lab_result:
+        $ref: '#/definitions/models.LabResult'
+      meta:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      options:
+        additionalProperties: true
+        type: object
+    required:
+    - input_protein
+    - name
+    - options
+    type: object
+  models.LabResult:
+    properties:
+      scores:
+        items:
+          type: number
+        type: array
+      sequences:
+        items:
+          type: string
+        type: array
+      total:
+        minimum: 0
+        type: integer
+    required:
+    - scores
+    - sequences
     type: object
   models.ResetPasswordInput:
     properties:
@@ -98,6 +157,253 @@ paths:
       summary: Health Check Endpoint
       tags:
       - Healthchack
+  /proteng-conductor/jobs:
+    get:
+      description: Retrieve a list of all jobs
+      parameters:
+      - description: Filter state of the jobs
+        in: query
+        name: state
+        type: string
+      - description: Filter name of the job
+        in: query
+        name: name
+        type: string
+      - description: Sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort direction (asc/desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all jobs
+      tags:
+      - Jobs
+    post:
+      consumes:
+      - application/json
+      description: Create a new job with the provided details
+      parameters:
+      - description: Job object
+        in: body
+        name: job
+        required: true
+        schema:
+          $ref: '#/definitions/models.JobInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new job
+      tags:
+      - Jobs
+  /proteng-conductor/jobs/{id}:
+    delete:
+      description: Delete a job by its ID
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a job by ID
+      tags:
+      - Jobs
+    get:
+      description: Retrieve details of a job by its ID
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a job by ID
+      tags:
+      - Jobs
+    put:
+      consumes:
+      - application/json
+      description: Update an existing job with the provided details
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Job object
+        in: body
+        name: job
+        required: true
+        schema:
+          $ref: '#/definitions/models.JobInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing job
+      tags:
+      - Jobs
+  /proteng-conductor/jobs/{id}/{stage}:
+    post:
+      consumes:
+      - application/json
+      description: Create a duplicate job based on another job with the provided details
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Stage ID
+        in: path
+        name: stage
+        required: true
+        type: string
+      - description: Job object
+        in: body
+        name: job
+        required: true
+        schema:
+          $ref: '#/definitions/models.DuplicateJobInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a duplicate job based on another job
+      tags:
+      - Jobs
+  /proteng-conductor/jobs/{id}/run:
+    post:
+      description: Start a job by its ID
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Start a job by ID
+      tags:
+      - Jobs
   /proteng-user-mgmt/admins:
     get:
       description: Retrieve a list of all admins

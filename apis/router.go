@@ -34,17 +34,13 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter := r.Group("/proteng-conductor")
 	conductorUrl := configs.Config.ConductorUrl
 
-	conductorRouter.GET("/jobs", middleware.Authenticate(), middleware.Authorize("user"), func(c *gin.Context) {
-		ForwardAddParam(conductorUrl+"/jobs?"+c.Request.URL.RawQuery, map[string]interface{}{"user_id": c.GetString("userId")})(c)
-	})
-	conductorRouter.GET("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user"), func(c *gin.Context) { Forward(conductorUrl + "/jobs/" + c.Param("id"))(c) })
-	conductorRouter.POST("/jobs", middleware.Authenticate(), middleware.Authorize("user"), func(c *gin.Context) {
-		ForwardAddBody(conductorUrl+"/jobs", map[string]interface{}{"user_id": c.GetString("userId")})(c)
-	})
-	conductorRouter.PUT("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user", "staff"), func(c *gin.Context) { Forward(conductorUrl + "/jobs/" + c.Param("id"))(c) })
-	conductorRouter.DELETE("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user"), func(c *gin.Context) { Forward(conductorUrl + "/jobs/" + c.Param("id"))(c) })
-	conductorRouter.POST("/jobs/:id/run", middleware.Authenticate(), middleware.Authorize("user"), func(c *gin.Context) { Forward(conductorUrl + "/jobs/" + c.Param("id") + "/run")(c) })
-	conductorRouter.POST("/jobs/:id/:stage", middleware.Authenticate(), middleware.Authorize("user"), func(c *gin.Context) { Forward(conductorUrl + "/jobs/" + c.Param("id") + "/" + c.Param("stage"))(c) })
+	conductorRouter.GET("/jobs", middleware.Authenticate(), middleware.Authorize("user"), GetAllJobs)
+	conductorRouter.GET("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user"), GetJob)
+	conductorRouter.POST("/jobs", middleware.Authenticate(), middleware.Authorize("user"), CreateJob)
+	conductorRouter.PUT("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user", "staff"), UpdateJob)
+	conductorRouter.DELETE("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user"), DeleteJob)
+	conductorRouter.POST("/jobs/:id/run", middleware.Authenticate(), middleware.Authorize("user"), RunJob)
+	conductorRouter.POST("/jobs/:id/:stage", middleware.Authenticate(), middleware.Authorize("user"), CreateDuplicateJob)
 
 	conductorRouter.GET("/mutations", middleware.Authenticate(), middleware.Authorize("user"), func(c *gin.Context) { Forward(conductorUrl + "/mutations?" + c.Request.URL.RawQuery)(c) })
 	conductorRouter.GET("/mutations/:id", middleware.Authenticate(), middleware.Authorize("user"), func(c *gin.Context) { Forward(conductorUrl + "/mutations/" + c.Param("id"))(c) })
