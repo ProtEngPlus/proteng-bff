@@ -91,6 +91,16 @@ definitions:
     - scores
     - sequences
     type: object
+  models.MutationInput:
+    properties:
+      input_protein:
+        type: string
+      job_id:
+        type: string
+      options:
+        additionalProperties: true
+        type: object
+    type: object
   models.ResetPasswordInput:
     properties:
       password:
@@ -404,6 +414,208 @@ paths:
       summary: Start a job by ID
       tags:
       - Jobs
+  /proteng-conductor/mutations:
+    get:
+      description: Retrieve a list of all mutations
+      parameters:
+      - description: Filter by job ID
+        in: query
+        name: job_id
+        required: true
+        type: string
+      - description: Sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort direction (asc/desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all mutations
+      tags:
+      - Mutations
+    post:
+      consumes:
+      - application/json
+      description: Create a new mutation with the provided details
+      parameters:
+      - description: Mutation object
+        in: body
+        name: mutation
+        required: true
+        schema:
+          $ref: '#/definitions/models.MutationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new mutation
+      tags:
+      - Mutations
+  /proteng-conductor/mutations/{id}:
+    delete:
+      description: Delete a mutation by its ID
+      parameters:
+      - description: Mutation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a mutation by ID
+      tags:
+      - Mutations
+    get:
+      description: Retrieve details of a mutation by its ID
+      parameters:
+      - description: Mutation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a mutation by ID
+      tags:
+      - Mutations
+    put:
+      consumes:
+      - application/json
+      description: Update an existing mutation with the provided details
+      parameters:
+      - description: Mutation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Mutation object
+        in: body
+        name: mutation
+        required: true
+        schema:
+          $ref: '#/definitions/models.MutationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing mutation
+      tags:
+      - Mutations
+  /proteng-conductor/mutations/{id}/run:
+    post:
+      description: Start a mutation by its ID
+      parameters:
+      - description: Mutation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Start a mutation by ID
+      tags:
+      - Mutations
   /proteng-user-mgmt/admins:
     get:
       description: Retrieve a list of all admins
