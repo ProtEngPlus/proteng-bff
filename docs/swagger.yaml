@@ -167,6 +167,38 @@ paths:
       summary: Health Check Endpoint
       tags:
       - Healthchack
+  /proteng-conductor/artifact/{bucketName}/{objectName}:
+    get:
+      consumes:
+      - application/json
+      description: Download an artifact of a job
+      parameters:
+      - description: Bucket Name
+        in: path
+        name: bucketName
+        required: true
+        type: string
+      - description: Object Name
+        in: path
+        name: objectName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Download Artifact
+      tags:
+      - Artifact
   /proteng-conductor/jobs:
     get:
       description: Retrieve a list of all jobs
