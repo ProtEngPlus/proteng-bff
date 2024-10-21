@@ -1049,6 +1049,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/proteng-user-mgmt/auth/changepassword/{id}": {
+            "patch": {
+                "description": "Changes the password while logged in",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "change password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User credentials",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ChangePasswordInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/proteng-user-mgmt/auth/forgotpassword": {
             "post": {
                 "description": "Initiates the forgot password process by sending a reset email to the user",
@@ -1227,6 +1286,108 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-user-mgmt/auth/sent-verification": {
+            "post": {
+                "description": "Initiates the email verification process by sending a verification email to the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "initiates verification process",
+                "parameters": [
+                    {
+                        "description": "User email",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SendVerificationInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "502": {
+                        "description": "Bad Gateway",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-user-mgmt/auth/verifyemail/{verificationToken}": {
+            "patch": {
+                "description": "Verifies the email using the provided verification token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Verify email",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Verification Token",
+                        "name": "verificationToken",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.HttpResponseError"
                         }
@@ -1647,6 +1808,21 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ChangePasswordInput": {
+            "type": "object",
+            "required": [
+                "current_password",
+                "new_password"
+            ],
+            "properties": {
+                "current_password": {
+                    "type": "string"
+                },
+                "new_password": {
+                    "type": "string"
+                }
+            }
+        },
         "models.DuplicateJobInput": {
             "type": "object",
             "required": [
@@ -1655,6 +1831,9 @@ const docTemplate = `{
                 "options"
             ],
             "properties": {
+                "description": {
+                    "type": "string"
+                },
                 "input_protein": {
                     "type": "string"
                 },
@@ -1675,6 +1854,9 @@ const docTemplate = `{
                     "additionalProperties": true
                 },
                 "ref_job_id": {
+                    "type": "string"
+                },
+                "run_type": {
                     "type": "string"
                 }
             }
@@ -1724,6 +1906,9 @@ const docTemplate = `{
                 "options"
             ],
             "properties": {
+                "description": {
+                    "type": "string"
+                },
                 "input_protein": {
                     "type": "string"
                 },
@@ -1742,6 +1927,9 @@ const docTemplate = `{
                 "options": {
                     "type": "object",
                     "additionalProperties": true
+                },
+                "run_type": {
+                    "type": "string"
                 }
             }
         },
@@ -1796,6 +1984,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.SendVerificationInput": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
         "models.SignInAdminInput": {
             "type": "object",
             "required": [
@@ -1832,9 +2031,6 @@ const docTemplate = `{
         "models.UserInput": {
             "type": "object",
             "properties": {
-                "citizen_id": {
-                    "type": "string"
-                },
                 "email": {
                     "type": "string"
                 },
@@ -1851,6 +2047,9 @@ const docTemplate = `{
                     }
                 },
                 "surname": {
+                    "type": "string"
+                },
+                "user_role": {
                     "type": "string"
                 }
             }

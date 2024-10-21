@@ -6,6 +6,8 @@ type JobInput struct {
 	Options      map[string]interface{} `bson:"options" json:"options" validate:"required"`
 	Meta         []string               `bson:"meta" json:"meta"`
 	InputProtein string                 `bson:"input_protein" json:"input_protein" validate:"required"`
+	RunType	  	 string                 `bson:"run_type" json:"run_type"`
+	Description  string                 `bson:"description" json:"description"`
 }
 
 type DuplicateJobInput struct {
@@ -14,6 +16,8 @@ type DuplicateJobInput struct {
 	Options      map[string]interface{} `bson:"options" json:"options" validate:"required"`
 	Meta         []string               `bson:"meta" json:"meta"`
 	InputProtein string                 `bson:"input_protein" json:"input_protein" validate:"required"`
+	RunType	  	 string                 `bson:"run_type" json:"run_type"`
+	Description  string                 `bson:"description" json:"description"`
 	RefJobId     string                 `bson:"ref_job_id" json:"ref_job_id"`
 }
 

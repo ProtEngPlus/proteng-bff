@@ -193,3 +193,57 @@ func ResetPassword(c *gin.Context) {
 	resetToken := c.Param("resetToken")
 	Forward(usermgmtUrl + "/auth/resetpassword/" + resetToken)(c)
 }
+
+// ChangePassword changes the password while logged in
+// @Summary change password
+// @Description Changes the password while logged in
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param id path string true "User ID"
+// @Param body body models.ChangePasswordInput true "User credentials"
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 400 {object} models.HttpResponseError "Bad request"
+// @Failure 403 {object} models.HttpResponseError "Forbidden"
+// @Failure 404 {object} models.HttpResponseError "Not found"
+// @Router /proteng-user-mgmt/auth/changepassword/{id} [patch]
+func ChangePassword(c *gin.Context) {
+	usermgmtUrl := configs.Config.UserMgmtUrl
+	userID := c.GetString("userId")
+	Forward(usermgmtUrl + "/auth/changepassword/" + userID)(c)
+}
+
+// SendVerification initiates the email verification process by sending a verification email to the user
+// @Summary initiates verification process
+// @Description Initiates the email verification process by sending a verification email to the user
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param body body models.SendVerificationInput true "User email"
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 400 {object} models.HttpResponseError "Bad request"
+// @Failure 403 {object} models.HttpResponseError "Forbidden"
+// @Failure 502 {object} models.HttpResponseError "Bad Gateway"
+// @Router /proteng-user-mgmt/auth/sent-verification [post]
+func SendVerification(c *gin.Context) {
+	usermgmtUrl := configs.Config.UserMgmtUrl
+	Forward(usermgmtUrl + "/auth/sentverification")(c)
+}
+
+// VerifyEmail verifies the email using the provided verification token
+// @Summary Verify email
+// @Description Verifies the email using the provided verification token
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param verificationToken path string true "Verification Token"
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 400 {object} models.HttpResponseError "Bad request"
+// @Failure 403 {object} models.HttpResponseError "Forbidden"
+// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
+// @Router /proteng-user-mgmt/auth/verifyemail/{verificationToken} [patch]
+func VerifyEmail(c *gin.Context) {
+	usermgmtUrl := configs.Config.UserMgmtUrl
+	verificationToken := c.Param("verificationToken")
+	Forward(usermgmtUrl + "/auth/verifyemail/" + verificationToken)(c)
+}
