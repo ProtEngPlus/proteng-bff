@@ -838,17 +838,12 @@ paths:
       summary: Update an existing admin
       tags:
       - Admin
-  /proteng-user-mgmt/auth/changepassword/{id}:
+  /proteng-user-mgmt/auth/changepassword:
     patch:
       consumes:
       - application/json
       description: Changes the password while logged in
       parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
       - description: User credentials
         in: body
         name: body
@@ -999,7 +994,7 @@ paths:
       summary: Reset password
       tags:
       - Authentication
-  /proteng-user-mgmt/auth/sent-verification:
+  /proteng-user-mgmt/auth/sentverification:
     post:
       consumes:
       - application/json

@@ -1049,7 +1049,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/proteng-user-mgmt/auth/changepassword/{id}": {
+        "/proteng-user-mgmt/auth/changepassword": {
             "patch": {
                 "description": "Changes the password while logged in",
                 "consumes": [
@@ -1063,13 +1063,6 @@ const docTemplate = `{
                 ],
                 "summary": "change password",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "description": "User credentials",
                         "name": "body",
@@ -1293,7 +1286,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/proteng-user-mgmt/auth/sent-verification": {
+        "/proteng-user-mgmt/auth/sentverification": {
             "post": {
                 "description": "Initiates the email verification process by sending a verification email to the user",
                 "consumes": [

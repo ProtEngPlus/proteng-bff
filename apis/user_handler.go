@@ -200,13 +200,12 @@ func ResetPassword(c *gin.Context) {
 // @Tags Authentication
 // @Accept json
 // @Produce json
-// @Param id path string true "User ID"
 // @Param body body models.ChangePasswordInput true "User credentials"
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
 // @Failure 400 {object} models.HttpResponseError "Bad request"
 // @Failure 403 {object} models.HttpResponseError "Forbidden"
 // @Failure 404 {object} models.HttpResponseError "Not found"
-// @Router /proteng-user-mgmt/auth/changepassword/{id} [patch]
+// @Router /proteng-user-mgmt/auth/changepassword [patch]
 func ChangePassword(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	userID := c.GetString("userId")
@@ -224,7 +223,7 @@ func ChangePassword(c *gin.Context) {
 // @Failure 400 {object} models.HttpResponseError "Bad request"
 // @Failure 403 {object} models.HttpResponseError "Forbidden"
 // @Failure 502 {object} models.HttpResponseError "Bad Gateway"
-// @Router /proteng-user-mgmt/auth/sent-verification [post]
+// @Router /proteng-user-mgmt/auth/sentverification [post]
 func SendVerification(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	Forward(usermgmtUrl + "/auth/sentverification")(c)
