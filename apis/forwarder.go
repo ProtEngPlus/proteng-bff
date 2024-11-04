@@ -74,11 +74,7 @@ func ForwardStrict[Resp any, Req any](url string) func(c *gin.Context) {
 			apiutil.ApiResponseInternalServerError(gctx, err)
 			return
 		}
-		if resp.StatusCode != http.StatusOK {
-			gctx.JSON(http.StatusInternalServerError, respBody)
-			return
-		}
-		gctx.JSON(http.StatusOK, respBody)
+		gctx.JSON(resp.StatusCode, respBody)
 	}
 }
 
@@ -121,10 +117,6 @@ func ForwardAddBody(url string, requestBody map[string]interface{}) func(c *gin.
 			return
 		}
 
-		if resp.StatusCode != http.StatusOK {
-			gctx.JSON(http.StatusInternalServerError, respBody)
-			return
-		}
-		gctx.JSON(http.StatusOK, respBody)
+		gctx.JSON(resp.StatusCode, respBody)
 	}
 }

@@ -1,12 +1,12 @@
 package models
 
 type UserInput struct {
-	Email     string   `bson:"email" json:"email"`
-	Password  string   `bson:"password" json:"password"`
-	Name      string   `bson:"name" json:"name"`
-	Surname   string   `bson:"surname" json:"surname"`
-	CitizenId string   `bson:"citizen_id" json:"citizen_id"`
-	Role      []string `bson:"role" json:"role"`
+	Email    string   `bson:"email" json:"email"`
+	Password string   `bson:"password" json:"password"`
+	Name     string   `bson:"name" json:"name"`
+	Surname  string   `bson:"surname" json:"surname"`
+	Role     []string `bson:"role" json:"role"`
+	UserRole string   `bson:"user_role" json:"user_role"`
 }
 
 type SignInInput struct {
@@ -21,4 +21,12 @@ type ForgotPasswordInput struct {
 
 type ResetPasswordInput struct {
 	Password string `json:"password" binding:"required"`
+}
+
+type ChangePasswordInput struct {
+	CurrentPassword string `json:"current_password" binding:"required"`
+	NewPassword     string `json:"new_password" binding:"required"`
+}
+type SendVerificationInput struct {
+	Email string `json:"email" binding:"required"`
 }

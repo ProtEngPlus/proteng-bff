@@ -22,6 +22,9 @@ func InitRouter(r *gin.Engine) {
 	userRouter.DELETE("/me", middleware.Authenticate(), DeleteMe)
 	userRouter.POST("/auth/forgotpassword", ForgotPassword)
 	userRouter.PATCH("/auth/resetpassword/:resetToken", ResetPassword)
+	userRouter.PATCH("/auth/changepassword", middleware.Authenticate(), ChangePassword)
+	userRouter.POST("/auth/sendverification", SendVerification)
+	userRouter.POST("/auth/verifyemail/:verificationToken", VerifyEmail)
 
 	userRouter.GET("/admins", middleware.Authenticate(), middleware.Authorize("admin"), GetAllAdmins)
 	userRouter.GET("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), GetAdminByID)
