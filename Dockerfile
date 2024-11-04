@@ -1,5 +1,5 @@
 #build stage
-FROM golang:1.21 AS builder
+FROM golang:1.22 AS builder
 ARG ARCH=amd64
 WORKDIR /go/src/github.com/protengplus/proteng-bff
 ADD . .
