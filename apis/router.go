@@ -37,6 +37,7 @@ func InitRouter(r *gin.Engine) {
 	// conductorUrl := configs.Config.ConductorUrl
 
 	conductorRouter.GET("/jobs", middleware.Authenticate(), middleware.Authorize("user"), GetAllJobs)
+	conductorRouter.GET("/jobs/dashboard", middleware.Authenticate(), middleware.Authorize("user"), GetJobDashboard)
 	conductorRouter.GET("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user"), GetJob)
 	conductorRouter.POST("/jobs", middleware.Authenticate(), middleware.Authorize("user"), CreateJob)
 	conductorRouter.PUT("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user", "staff"), UpdateJob)

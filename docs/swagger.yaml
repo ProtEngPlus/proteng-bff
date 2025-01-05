@@ -471,6 +471,37 @@ paths:
       summary: Start a job by ID
       tags:
       - Jobs
+  /proteng-conductor/jobs/dashboard:
+    get:
+      description: Retrieve information about the jobs to show in the dashboard page
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get job dashboard
+      tags:
+      - Jobs
   /proteng-conductor/mutations:
     get:
       description: Retrieve a list of all mutations
