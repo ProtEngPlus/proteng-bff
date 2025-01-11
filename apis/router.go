@@ -52,4 +52,6 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.POST("/mutations/:id/run", middleware.Authenticate(), middleware.Authorize("user"), RunMutation)
 
 	conductorRouter.GET("/artifact/:bucketName/:objectName", middleware.Authenticate(), middleware.Authorize("user"), DownloadArtifact)
+
+	conductorRouter.GET("/uniProt/:uniProtId", middleware.Authenticate(), middleware.Authorize("user"), GetProteinSequenceFromId)
 }
