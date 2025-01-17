@@ -18,6 +18,44 @@ definitions:
     - current_password
     - new_password
     type: object
+  models.ConfigurationInput:
+    properties:
+      artifact:
+        additionalProperties: true
+        type: object
+      description:
+        type: string
+      input_protein:
+        type: string
+      is_notification_on:
+        type: boolean
+      job_id:
+        type: string
+      lab_result:
+        $ref: '#/definitions/models.LabResult'
+      meta:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      options:
+        additionalProperties: true
+        type: object
+      run_type:
+        type: string
+      state:
+        type: string
+      user_id:
+        type: string
+    required:
+    - input_protein
+    - job_id
+    - name
+    - options
+    - run_type
+    - user_id
+    type: object
   models.DuplicateJobInput:
     properties:
       description:
@@ -471,6 +509,60 @@ paths:
       summary: Start a job by ID
       tags:
       - Jobs
+  /proteng-conductor/jobs/configurations:
+    get:
+      description: Retrieve a list of all configurations
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all configurations
+      tags:
+      - Configurations
+    post:
+      consumes:
+      - application/json
+      description: Create a new configuration with the provided details
+      parameters:
+      - description: Configuration object
+        in: body
+        name: configuration
+        required: true
+        schema:
+          $ref: '#/definitions/models.ConfigurationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Save a new configuration
+      tags:
+      - Configurations
   /proteng-conductor/jobs/dashboard:
     get:
       description: Retrieve information about the jobs to show in the dashboard page
