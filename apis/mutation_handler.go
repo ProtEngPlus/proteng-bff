@@ -19,7 +19,7 @@ import (
 // @Router /proteng-conductor/mutations [get]
 func GetAllMutations(c *gin.Context) {
 	conductorUrl := configs.Config.ConductorUrl
-	Forward(conductorUrl + "/mutations?" + c.Request.URL.RawQuery)(c)
+	ForwardAddParam(conductorUrl+"/mutations?"+c.Request.URL.RawQuery, map[string]interface{}{"user_id": c.GetString("userId")})(c)
 }
 
 // @Summary Get a mutation by ID
@@ -52,7 +52,7 @@ func GetMutation(c *gin.Context) {
 // @Router /proteng-conductor/mutations [post]
 func CreateMutation(c *gin.Context) {
 	conductorUrl := configs.Config.ConductorUrl
-	Forward(conductorUrl + "/mutations")(c)
+	ForwardAddBody(conductorUrl+"/mutations", map[string]interface{}{"user_id": c.GetString("userId")})(c)
 }
 
 // @Summary Update an existing mutation
