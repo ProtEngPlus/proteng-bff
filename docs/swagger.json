@@ -579,6 +579,128 @@
                 }
             }
         },
+        "/proteng-conductor/mutations/results": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve a list of all mutation results for a mutation",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mutations"
+                ],
+                "summary": "Get all mutation results",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by mutation ID",
+                        "name": "mutation_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort direction (asc/desc)",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-conductor/mutations/results/{resultId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update an existing mutation result with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mutation"
+                ],
+                "summary": "Update an existing mutation result",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "MutationResult ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "MutationResult object",
+                        "name": "mutationResult",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.MutationResultInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/proteng-conductor/mutations/{id}": {
             "get": {
                 "security": [
@@ -1954,6 +2076,14 @@
                 "options": {
                     "type": "object",
                     "additionalProperties": true
+                }
+            }
+        },
+        "models.MutationResultInput": {
+            "type": "object",
+            "properties": {
+                "is_bookmark": {
+                    "type": "boolean"
                 }
             }
         },

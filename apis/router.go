@@ -50,6 +50,8 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.PUT("/mutations/:id", middleware.Authenticate(), middleware.Authorize("user"), UpdateMutation)
 	conductorRouter.DELETE("/mutations/:id", middleware.Authenticate(), middleware.Authorize("user"), DeleteMutation)
 	conductorRouter.POST("/mutations/:id/run", middleware.Authenticate(), middleware.Authorize("user"), RunMutation)
+	conductorRouter.GET("/mutations/results", middleware.Authenticate(), middleware.Authorize("user"), GetAllMutationResults)
+	conductorRouter.PUT("/mutations/results/:resultId", middleware.Authenticate(), middleware.Authorize("user"), UpdateMutationResult)
 
 	conductorRouter.GET("/artifact/:bucketName/:objectName", middleware.Authenticate(), middleware.Authorize("user"), DownloadArtifact)
 }

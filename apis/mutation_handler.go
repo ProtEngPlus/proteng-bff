@@ -101,3 +101,38 @@ func RunMutation(c *gin.Context) {
 	conductorUrl := configs.Config.ConductorUrl
 	Forward(conductorUrl + "/mutations/" + c.Param("id") + "/run")(c)
 }
+
+// @Summary Get all mutation results
+// @Description Retrieve a list of all mutation results for a mutation
+// @Tags Mutations
+// @Security ApiKeyAuth
+// @Produce json
+// @Param mutation_id query string true "Filter by mutation ID"
+// @Param sort query string false "Sort by"
+// @Param order query string false "Sort direction (asc/desc)"
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 401 {object} models.HttpResponseError "Unauthorized"
+// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
+// @Router /proteng-conductor/mutations/results [get]
+func GetAllMutationResults(c *gin.Context) {
+	conductorUrl := configs.Config.ConductorUrl
+	Forward(conductorUrl + "/mutations/results?" + c.Request.URL.RawQuery)(c)
+}
+
+// @Summary Update an existing mutation result
+// @Description Update an existing mutation result with the provided details
+// @Tags Mutation
+// @Security ApiKeyAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "MutationResult ID"
+// @Param mutationResult body models.MutationResultInput true "MutationResult object"
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 400 {object} models.HttpResponseError "Bad request"
+// @Failure 404 {object} models.HttpResponseError "Not found"
+// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
+// @Router /proteng-conductor/mutations/results/{resultId} [put]
+func UpdateMutationResult(c *gin.Context) {
+	conductorUrl := configs.Config.ConductorUrl
+	Forward(conductorUrl + "/mutations/results/" + c.Param("resultId"))(c)
+}
