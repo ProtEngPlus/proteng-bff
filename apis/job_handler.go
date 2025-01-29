@@ -118,25 +118,6 @@ func RunJob(c *gin.Context) {
 	Forward(conductorUrl + "/jobs/" + c.Param("id") + "/run")(c)
 }
 
-// @Summary Create a duplicate job based on another job
-// @Description Create a duplicate job based on another job with the provided details
-// @Tags Jobs
-// @Security ApiKeyAuth
-// @Accept json
-// @Produce json
-// @Param id path string true "Job ID"
-// @Param stage path string true "Stage ID"
-// @Param job body models.DuplicateJobInput true "Job object"
-// @Success 200 {object} models.HttpResponseOK "Successful operation"
-// @Failure 400 {object} models.HttpResponseError "Bad request"
-// @Failure 404 {object} models.HttpResponseError "Not found"
-// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
-// @Router /proteng-conductor/jobs/{id}/{stage} [post]
-func CreateDuplicateJob(c *gin.Context) {
-	conductorUrl := configs.Config.ConductorUrl
-	Forward(conductorUrl + "/jobs/" + c.Param("id") + "/" + c.Param("stage"))(c)
-}
-
 // @Summary Get all configurations
 // @Description Retrieve a list of all configurations
 // @Tags Configurations

@@ -43,7 +43,6 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.PUT("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user", "staff"), UpdateJob)
 	conductorRouter.DELETE("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user"), DeleteJob)
 	conductorRouter.POST("/jobs/:id/run", middleware.Authenticate(), middleware.Authorize("user"), RunJob)
-	conductorRouter.POST("/jobs/:id/:stage", middleware.Authenticate(), middleware.Authorize("user"), CreateDuplicateJob)
 
 	conductorRouter.GET("/jobs/configurations", middleware.Authenticate(), middleware.Authorize("user"), GetAllConfigurations)
 	conductorRouter.POST("/jobs/configurations", middleware.Authenticate(), middleware.Authorize("user"), SaveConfiguration)

@@ -539,77 +539,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/proteng-conductor/jobs/{id}/{stage}": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Create a duplicate job based on another job with the provided details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Jobs"
-                ],
-                "summary": "Create a duplicate job based on another job",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Job ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Stage ID",
-                        "name": "stage",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Job object",
-                        "name": "job",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.DuplicateJobInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/models.HttpResponseOK"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/models.HttpResponseError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.HttpResponseError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.HttpResponseError"
-                        }
-                    }
-                }
-            }
-        },
         "/proteng-conductor/mutations": {
             "get": {
                 "security": [
@@ -2123,44 +2052,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.DuplicateJobInput": {
-            "type": "object",
-            "required": [
-                "input_protein",
-                "name",
-                "options"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "input_protein": {
-                    "type": "string"
-                },
-                "lab_result": {
-                    "$ref": "#/definitions/models.LabResult"
-                },
-                "meta": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "name": {
-                    "type": "string"
-                },
-                "options": {
-                    "type": "object",
-                    "additionalProperties": true
-                },
-                "ref_job_id": {
-                    "type": "string"
-                },
-                "run_type": {
                     "type": "string"
                 }
             }

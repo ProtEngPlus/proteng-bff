@@ -56,32 +56,6 @@ definitions:
     - run_type
     - user_id
     type: object
-  models.DuplicateJobInput:
-    properties:
-      description:
-        type: string
-      input_protein:
-        type: string
-      lab_result:
-        $ref: '#/definitions/models.LabResult'
-      meta:
-        items:
-          type: string
-        type: array
-      name:
-        type: string
-      options:
-        additionalProperties: true
-        type: object
-      ref_job_id:
-        type: string
-      run_type:
-        type: string
-    required:
-    - input_protein
-    - name
-    - options
-    type: object
   models.ForgotPasswordInput:
     properties:
       email:
@@ -435,52 +409,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update an existing job
-      tags:
-      - Jobs
-  /proteng-conductor/jobs/{id}/{stage}:
-    post:
-      consumes:
-      - application/json
-      description: Create a duplicate job based on another job with the provided details
-      parameters:
-      - description: Job ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Stage ID
-        in: path
-        name: stage
-        required: true
-        type: string
-      - description: Job object
-        in: body
-        name: job
-        required: true
-        schema:
-          $ref: '#/definitions/models.DuplicateJobInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "404":
-          description: Not found
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      security:
-      - ApiKeyAuth: []
-      summary: Create a duplicate job based on another job
       tags:
       - Jobs
   /proteng-conductor/jobs/{id}/run:
