@@ -23,6 +23,22 @@ func GetAllJobs(c *gin.Context) {
 	ForwardAddParam(conductorUrl+"/jobs?"+c.Request.URL.RawQuery, map[string]interface{}{"user_id": c.GetString("userId")})(c)
 }
 
+// @Summary Get job dashboard
+// @Description Retrieve information about the jobs to show in the dashboard page
+// @Tags Jobs
+// @Security ApiKeyAuth
+// @Produce json
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 400 {object} models.HttpResponseError "Bad request"
+// @Failure 401 {object} models.HttpResponseError "Unauthorized"
+// @Failure 404 {object} models.HttpResponseError "Not found"
+// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
+// @Router /proteng-conductor/jobs/dashboard [get]
+func GetJobDashboard(c *gin.Context) {
+	conductorUrl := configs.Config.ConductorUrl
+	ForwardAddParam(conductorUrl+"/jobs/dashboard", map[string]interface{}{"user_id": c.GetString("userId")})(c)
+}
+
 // @Summary Get a job by ID
 // @Description Retrieve details of a job by its ID
 // @Tags Jobs
@@ -119,4 +135,34 @@ func RunJob(c *gin.Context) {
 func CreateDuplicateJob(c *gin.Context) {
 	conductorUrl := configs.Config.ConductorUrl
 	Forward(conductorUrl + "/jobs/" + c.Param("id") + "/" + c.Param("stage"))(c)
+}
+
+// @Summary Get all configurations
+// @Description Retrieve a list of all configurations
+// @Tags Configurations
+// @Security ApiKeyAuth
+// @Produce json
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 401 {object} models.HttpResponseError "Unauthorized"
+// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
+// @Router /proteng-conductor/jobs/configurations [get]
+func GetAllConfigurations(c *gin.Context) {
+	conductorUrl := configs.Config.ConductorUrl
+	ForwardAddParam(conductorUrl+"/jobs/configurations", map[string]interface{}{"user_id": c.GetString("userId")})(c)
+}
+
+// @Summary Save a new configuration
+// @Description Create a new configuration with the provided details
+// @Tags Configurations
+// @Security ApiKeyAuth
+// @Accept json
+// @Produce json
+// @Param configuration body models.ConfigurationInput true "Configuration object"
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 400 {object} models.HttpResponseError "Bad request"
+// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
+// @Router /proteng-conductor/jobs/configurations [post]
+func SaveConfiguration(c *gin.Context) {
+	conductorUrl := configs.Config.ConductorUrl
+	ForwardAddBody(conductorUrl+"/jobs/configurations", map[string]interface{}{"user_id": c.GetString("userId")})(c)
 }
