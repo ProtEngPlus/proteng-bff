@@ -131,6 +131,15 @@ definitions:
         additionalProperties: true
         type: object
     type: object
+  models.QueryResultInput:
+    properties:
+      input_protein:
+        type: string
+      is_selected:
+        type: boolean
+      job_id:
+        type: string
+    type: object
   models.MutationResultInput:
     properties:
       is_bookmark:
@@ -729,6 +738,175 @@ paths:
       summary: Start a mutation by ID
       tags:
       - Mutations
+  /proteng-conductor/query_results:
+    get:
+      description: Retrieve a list of all query results
+      parameters:
+      - description: Filter by job ID
+        in: query
+        name: job_id
+        required: true
+        type: string
+      - description: Filter by selected
+        in: query
+        name: is_selected
+        type: boolean
+      - description: Filter by organism
+        in: query
+        name: organism
+        type: string
+      - description: Filter by percentIdentityFrom
+        in: query
+        name: percentIdentityFrom
+        type: number
+      - description: Filter by percentIdentityTo
+        in: query
+        name: percentIdentityTo
+        type: number
+      - description: Filter by eValuesFrom
+        in: query
+        name: eValuesFrom
+        type: number
+      - description: Filter by eValuesTo
+        in: query
+        name: eValuesTo
+        type: number
+      - description: Filter by queryCoverFrom
+        in: query
+        name: queryCoverFrom
+        type: number
+      - description: Filter by queryCoverTo
+        in: query
+        name: queryCoverTo
+        type: number
+      - description: Sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort direction (asc/desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all query results
+      tags:
+      - Query results
+  /proteng-conductor/query_results/{id}:
+    get:
+      description: Retrieve details of a query result by its ID
+      parameters:
+      - description: Query result ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a query result by ID
+      tags:
+      - Query results
+    put:
+      consumes:
+      - application/json
+      description: Update an existing query result with the provided details
+      parameters:
+      - description: Query Result ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Query result object
+        in: body
+        name: mutation
+        required: true
+        schema:
+          $ref: '#/definitions/models.QueryResultInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing query result
+      tags:
+      - Query results
+  /proteng-conductor/uniProt/{uniProtId}:
+    get:
+      consumes:
+      - application/json
+      description: Get Protein Sequence From UniProtId
+      parameters:
+      - description: UniProt Id
+        in: path
+        name: uniProtId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Protein Sequence From Id
+      tags:
+      - UniProt
   /proteng-conductor/mutations/results:
     get:
       description: Retrieve a list of all mutation results for a mutation
