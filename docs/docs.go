@@ -792,6 +792,269 @@ const docTemplate = `{
                 }
             }
         },
+        "/proteng-conductor/query_results": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve a list of all query results",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Query results"
+                ],
+                "summary": "Get all query results",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by job ID",
+                        "name": "job_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Filter by selected",
+                        "name": "is_selected",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by organism",
+                        "name": "organism",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Filter by percentIdentityFrom",
+                        "name": "percentIdentityFrom",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Filter by percentIdentityTo",
+                        "name": "percentIdentityTo",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Filter by eValuesFrom",
+                        "name": "eValuesFrom",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Filter by eValuesTo",
+                        "name": "eValuesTo",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Filter by queryCoverFrom",
+                        "name": "queryCoverFrom",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Filter by queryCoverTo",
+                        "name": "queryCoverTo",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort direction (asc/desc)",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-conductor/query_results/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve details of a query result by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Query results"
+                ],
+                "summary": "Get a query result by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Query result ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update an existing query result with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Query results"
+                ],
+                "summary": "Update an existing query result",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Query Result ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Query result object",
+                        "name": "mutation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.QueryResultInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-conductor/uniProt/{uniProtId}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Get Protein Sequence From UniProtId",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "UniProt"
+                ],
+                "summary": "Get Protein Sequence From Id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UniProt Id",
+                        "name": "uniProtId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/proteng-user-mgmt/admins": {
             "get": {
                 "security": [
@@ -1963,6 +2226,20 @@ const docTemplate = `{
                 "options": {
                     "type": "object",
                     "additionalProperties": true
+                }
+            }
+        },
+        "models.QueryResultInput": {
+            "type": "object",
+            "properties": {
+                "input_protein": {
+                    "type": "string"
+                },
+                "is_selected": {
+                    "type": "boolean"
+                },
+                "job_id": {
+                    "type": "string"
                 }
             }
         },
