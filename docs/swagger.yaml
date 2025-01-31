@@ -29,8 +29,6 @@ definitions:
         type: string
       is_notification_on:
         type: boolean
-      job_id:
-        type: string
       lab_result:
         $ref: '#/definitions/models.LabResult'
       meta:
@@ -42,17 +40,23 @@ definitions:
       options:
         additionalProperties: true
         type: object
+      ref_job_id:
+        type: string
       run_type:
         type: string
+      stage_id:
+        maximum: 3
+        minimum: 0
+        type: integer
       state:
         type: string
       user_id:
         type: string
     required:
     - input_protein
-    - job_id
     - name
     - options
+    - ref_job_id
     - run_type
     - user_id
     type: object
@@ -82,10 +86,15 @@ definitions:
     type: object
   models.JobInput:
     properties:
+      artifact:
+        additionalProperties: true
+        type: object
       description:
         type: string
       input_protein:
         type: string
+      is_notification_on:
+        type: boolean
       lab_result:
         $ref: '#/definitions/models.LabResult'
       meta:
@@ -97,12 +106,21 @@ definitions:
       options:
         additionalProperties: true
         type: object
+      ref_job_id:
+        type: string
       run_type:
+        type: string
+      stage_id:
+        maximum: 3
+        minimum: 0
+        type: integer
+      state:
         type: string
     required:
     - input_protein
     - name
     - options
+    - run_type
     type: object
   models.LabResult:
     properties:
@@ -131,6 +149,11 @@ definitions:
         additionalProperties: true
         type: object
     type: object
+  models.MutationResultInput:
+    properties:
+      is_bookmark:
+        type: boolean
+    type: object
   models.QueryResultInput:
     properties:
       input_protein:
@@ -139,11 +162,6 @@ definitions:
         type: boolean
       job_id:
         type: string
-    type: object
-  models.MutationResultInput:
-    properties:
-      is_bookmark:
-        type: boolean
     type: object
   models.ResetPasswordInput:
     properties:
@@ -738,6 +756,84 @@ paths:
       summary: Start a mutation by ID
       tags:
       - Mutations
+  /proteng-conductor/mutations/results:
+    get:
+      description: Retrieve a list of all mutation results for a mutation
+      parameters:
+      - description: Filter by mutation ID
+        in: query
+        name: mutation_id
+        required: true
+        type: string
+      - description: Sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort direction (asc/desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all mutation results
+      tags:
+      - Mutations
+  /proteng-conductor/mutations/results/{resultId}:
+    put:
+      consumes:
+      - application/json
+      description: Update an existing mutation result with the provided details
+      parameters:
+      - description: MutationResult ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: MutationResult object
+        in: body
+        name: mutationResult
+        required: true
+        schema:
+          $ref: '#/definitions/models.MutationResultInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing mutation result
+      tags:
+      - Mutation
   /proteng-conductor/query_results:
     get:
       description: Retrieve a list of all query results
@@ -907,84 +1003,6 @@ paths:
       summary: Get Protein Sequence From Id
       tags:
       - UniProt
-  /proteng-conductor/mutations/results:
-    get:
-      description: Retrieve a list of all mutation results for a mutation
-      parameters:
-      - description: Filter by mutation ID
-        in: query
-        name: mutation_id
-        required: true
-        type: string
-      - description: Sort by
-        in: query
-        name: sort
-        type: string
-      - description: Sort direction (asc/desc)
-        in: query
-        name: order
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      security:
-      - ApiKeyAuth: []
-      summary: Get all mutation results
-      tags:
-      - Mutations
-  /proteng-conductor/mutations/results/{resultId}:
-    put:
-      consumes:
-      - application/json
-      description: Update an existing mutation result with the provided details
-      parameters:
-      - description: MutationResult ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: MutationResult object
-        in: body
-        name: mutationResult
-        required: true
-        schema:
-          $ref: '#/definitions/models.MutationResultInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "404":
-          description: Not found
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      security:
-      - ApiKeyAuth: []
-      summary: Update an existing mutation result
-      tags:
-      - Mutation
   /proteng-user-mgmt/admins:
     get:
       description: Retrieve a list of all admins

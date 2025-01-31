@@ -2269,9 +2269,9 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "input_protein",
-                "job_id",
                 "name",
                 "options",
+                "ref_job_id",
                 "run_type",
                 "user_id"
             ],
@@ -2289,9 +2289,6 @@ const docTemplate = `{
                 "is_notification_on": {
                     "type": "boolean"
                 },
-                "job_id": {
-                    "type": "string"
-                },
                 "lab_result": {
                     "$ref": "#/definitions/models.LabResult"
                 },
@@ -2308,8 +2305,16 @@ const docTemplate = `{
                     "type": "object",
                     "additionalProperties": true
                 },
+                "ref_job_id": {
+                    "type": "string"
+                },
                 "run_type": {
                     "type": "string"
+                },
+                "stage_id": {
+                    "type": "integer",
+                    "maximum": 3,
+                    "minimum": 0
                 },
                 "state": {
                     "type": "string"
@@ -2361,14 +2366,22 @@ const docTemplate = `{
             "required": [
                 "input_protein",
                 "name",
-                "options"
+                "options",
+                "run_type"
             ],
             "properties": {
+                "artifact": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
                 "description": {
                     "type": "string"
                 },
                 "input_protein": {
                     "type": "string"
+                },
+                "is_notification_on": {
+                    "type": "boolean"
                 },
                 "lab_result": {
                     "$ref": "#/definitions/models.LabResult"
@@ -2386,7 +2399,18 @@ const docTemplate = `{
                     "type": "object",
                     "additionalProperties": true
                 },
+                "ref_job_id": {
+                    "type": "string"
+                },
                 "run_type": {
+                    "type": "string"
+                },
+                "stage_id": {
+                    "type": "integer",
+                    "maximum": 3,
+                    "minimum": 0
+                },
+                "state": {
                     "type": "string"
                 }
             }
@@ -2431,6 +2455,14 @@ const docTemplate = `{
                 }
             }
         },
+        "models.MutationResultInput": {
+            "type": "object",
+            "properties": {
+                "is_bookmark": {
+                    "type": "boolean"
+                }
+            }
+        },
         "models.QueryResultInput": {
             "type": "object",
             "properties": {
@@ -2442,14 +2474,6 @@ const docTemplate = `{
                 },
                 "job_id": {
                     "type": "string"
-                }
-            }
-        },
-        "models.MutationResultInput": {
-            "type": "object",
-            "properties": {
-                "is_bookmark": {
-                    "type": "boolean"
                 }
             }
         },
