@@ -200,6 +200,141 @@ const docTemplate = `{
                 }
             }
         },
+        "/proteng-conductor/jobs/configurations": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve a list of all configurations",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Configurations"
+                ],
+                "summary": "Get all configurations",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a new configuration with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Configurations"
+                ],
+                "summary": "Save a new configuration",
+                "parameters": [
+                    {
+                        "description": "Configuration object",
+                        "name": "configuration",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ConfigurationInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-conductor/jobs/dashboard": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve information about the jobs to show in the dashboard page",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Jobs"
+                ],
+                "summary": "Get job dashboard",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/proteng-conductor/jobs/{id}": {
             "get": {
                 "security": [
@@ -404,77 +539,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/proteng-conductor/jobs/{id}/{stage}": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Create a duplicate job based on another job with the provided details",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Jobs"
-                ],
-                "summary": "Create a duplicate job based on another job",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Job ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Stage ID",
-                        "name": "stage",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Job object",
-                        "name": "job",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.DuplicateJobInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/models.HttpResponseOK"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/models.HttpResponseError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not found",
-                        "schema": {
-                            "$ref": "#/definitions/models.HttpResponseError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/models.HttpResponseError"
-                        }
-                    }
-                }
-            }
-        },
         "/proteng-conductor/mutations": {
             "get": {
                 "security": [
@@ -557,6 +621,128 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/models.MutationInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-conductor/mutations/results": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve a list of all mutation results for a mutation",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mutations"
+                ],
+                "summary": "Get all mutation results",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by mutation ID",
+                        "name": "mutation_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort by",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort direction (asc/desc)",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-conductor/mutations/results/{resultId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Update an existing mutation result with the provided details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mutation"
+                ],
+                "summary": "Update an existing mutation result",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "MutationResult ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "MutationResult object",
+                        "name": "mutationResult",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.MutationResultInput"
                         }
                     }
                 ],
@@ -2079,19 +2265,29 @@ const docTemplate = `{
                 }
             }
         },
-        "models.DuplicateJobInput": {
+        "models.ConfigurationInput": {
             "type": "object",
             "required": [
                 "input_protein",
                 "name",
-                "options"
+                "options",
+                "ref_job_id",
+                "run_type",
+                "user_id"
             ],
             "properties": {
+                "artifact": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
                 "description": {
                     "type": "string"
                 },
                 "input_protein": {
                     "type": "string"
+                },
+                "is_notification_on": {
+                    "type": "boolean"
                 },
                 "lab_result": {
                     "$ref": "#/definitions/models.LabResult"
@@ -2113,6 +2309,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "run_type": {
+                    "type": "string"
+                },
+                "stage_id": {
+                    "type": "integer",
+                    "maximum": 3,
+                    "minimum": 0
+                },
+                "state": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -2159,14 +2366,22 @@ const docTemplate = `{
             "required": [
                 "input_protein",
                 "name",
-                "options"
+                "options",
+                "run_type"
             ],
             "properties": {
+                "artifact": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
                 "description": {
                     "type": "string"
                 },
                 "input_protein": {
                     "type": "string"
+                },
+                "is_notification_on": {
+                    "type": "boolean"
                 },
                 "lab_result": {
                     "$ref": "#/definitions/models.LabResult"
@@ -2184,7 +2399,18 @@ const docTemplate = `{
                     "type": "object",
                     "additionalProperties": true
                 },
+                "ref_job_id": {
+                    "type": "string"
+                },
                 "run_type": {
+                    "type": "string"
+                },
+                "stage_id": {
+                    "type": "integer",
+                    "maximum": 3,
+                    "minimum": 0
+                },
+                "state": {
                     "type": "string"
                 }
             }
@@ -2226,6 +2452,14 @@ const docTemplate = `{
                 "options": {
                     "type": "object",
                     "additionalProperties": true
+                }
+            }
+        },
+        "models.MutationResultInput": {
+            "type": "object",
+            "properties": {
+                "is_bookmark": {
+                    "type": "boolean"
                 }
             }
         },

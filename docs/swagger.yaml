@@ -18,12 +18,17 @@ definitions:
     - current_password
     - new_password
     type: object
-  models.DuplicateJobInput:
+  models.ConfigurationInput:
     properties:
+      artifact:
+        additionalProperties: true
+        type: object
       description:
         type: string
       input_protein:
         type: string
+      is_notification_on:
+        type: boolean
       lab_result:
         $ref: '#/definitions/models.LabResult'
       meta:
@@ -39,10 +44,21 @@ definitions:
         type: string
       run_type:
         type: string
+      stage_id:
+        maximum: 3
+        minimum: 0
+        type: integer
+      state:
+        type: string
+      user_id:
+        type: string
     required:
     - input_protein
     - name
     - options
+    - ref_job_id
+    - run_type
+    - user_id
     type: object
   models.ForgotPasswordInput:
     properties:
@@ -70,10 +86,15 @@ definitions:
     type: object
   models.JobInput:
     properties:
+      artifact:
+        additionalProperties: true
+        type: object
       description:
         type: string
       input_protein:
         type: string
+      is_notification_on:
+        type: boolean
       lab_result:
         $ref: '#/definitions/models.LabResult'
       meta:
@@ -85,12 +106,21 @@ definitions:
       options:
         additionalProperties: true
         type: object
+      ref_job_id:
+        type: string
       run_type:
+        type: string
+      stage_id:
+        maximum: 3
+        minimum: 0
+        type: integer
+      state:
         type: string
     required:
     - input_protein
     - name
     - options
+    - run_type
     type: object
   models.LabResult:
     properties:
@@ -118,6 +148,11 @@ definitions:
       options:
         additionalProperties: true
         type: object
+    type: object
+  models.MutationResultInput:
+    properties:
+      is_bookmark:
+        type: boolean
     type: object
   models.QueryResultInput:
     properties:
@@ -403,52 +438,6 @@ paths:
       summary: Update an existing job
       tags:
       - Jobs
-  /proteng-conductor/jobs/{id}/{stage}:
-    post:
-      consumes:
-      - application/json
-      description: Create a duplicate job based on another job with the provided details
-      parameters:
-      - description: Job ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Stage ID
-        in: path
-        name: stage
-        required: true
-        type: string
-      - description: Job object
-        in: body
-        name: job
-        required: true
-        schema:
-          $ref: '#/definitions/models.DuplicateJobInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "404":
-          description: Not found
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      security:
-      - ApiKeyAuth: []
-      summary: Create a duplicate job based on another job
-      tags:
-      - Jobs
   /proteng-conductor/jobs/{id}/run:
     post:
       description: Start a job by its ID
@@ -478,6 +467,91 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Start a job by ID
+      tags:
+      - Jobs
+  /proteng-conductor/jobs/configurations:
+    get:
+      description: Retrieve a list of all configurations
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all configurations
+      tags:
+      - Configurations
+    post:
+      consumes:
+      - application/json
+      description: Create a new configuration with the provided details
+      parameters:
+      - description: Configuration object
+        in: body
+        name: configuration
+        required: true
+        schema:
+          $ref: '#/definitions/models.ConfigurationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Save a new configuration
+      tags:
+      - Configurations
+  /proteng-conductor/jobs/dashboard:
+    get:
+      description: Retrieve information about the jobs to show in the dashboard page
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get job dashboard
       tags:
       - Jobs
   /proteng-conductor/mutations:
@@ -682,6 +756,84 @@ paths:
       summary: Start a mutation by ID
       tags:
       - Mutations
+  /proteng-conductor/mutations/results:
+    get:
+      description: Retrieve a list of all mutation results for a mutation
+      parameters:
+      - description: Filter by mutation ID
+        in: query
+        name: mutation_id
+        required: true
+        type: string
+      - description: Sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort direction (asc/desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all mutation results
+      tags:
+      - Mutations
+  /proteng-conductor/mutations/results/{resultId}:
+    put:
+      consumes:
+      - application/json
+      description: Update an existing mutation result with the provided details
+      parameters:
+      - description: MutationResult ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: MutationResult object
+        in: body
+        name: mutationResult
+        required: true
+        schema:
+          $ref: '#/definitions/models.MutationResultInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing mutation result
+      tags:
+      - Mutation
   /proteng-conductor/query_results:
     get:
       description: Retrieve a list of all query results

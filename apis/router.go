@@ -37,12 +37,15 @@ func InitRouter(r *gin.Engine) {
 	// conductorUrl := configs.Config.ConductorUrl
 
 	conductorRouter.GET("/jobs", middleware.Authenticate(), middleware.Authorize("user"), GetAllJobs)
+	conductorRouter.GET("/jobs/dashboard", middleware.Authenticate(), middleware.Authorize("user"), GetJobDashboard)
 	conductorRouter.GET("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user"), GetJob)
 	conductorRouter.POST("/jobs", middleware.Authenticate(), middleware.Authorize("user"), CreateJob)
 	conductorRouter.PUT("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user", "staff"), UpdateJob)
 	conductorRouter.DELETE("/jobs/:id", middleware.Authenticate(), middleware.Authorize("user"), DeleteJob)
 	conductorRouter.POST("/jobs/:id/run", middleware.Authenticate(), middleware.Authorize("user"), RunJob)
-	conductorRouter.POST("/jobs/:id/:stage", middleware.Authenticate(), middleware.Authorize("user"), CreateDuplicateJob)
+
+	conductorRouter.GET("/jobs/configurations", middleware.Authenticate(), middleware.Authorize("user"), GetAllConfigurations)
+	conductorRouter.POST("/jobs/configurations", middleware.Authenticate(), middleware.Authorize("user"), SaveConfiguration)
 
 	conductorRouter.GET("/mutations", middleware.Authenticate(), middleware.Authorize("user"), GetAllMutations)
 	conductorRouter.GET("/mutations/:id", middleware.Authenticate(), middleware.Authorize("user"), GetMutation)
@@ -50,6 +53,8 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.PUT("/mutations/:id", middleware.Authenticate(), middleware.Authorize("user"), UpdateMutation)
 	conductorRouter.DELETE("/mutations/:id", middleware.Authenticate(), middleware.Authorize("user"), DeleteMutation)
 	conductorRouter.POST("/mutations/:id/run", middleware.Authenticate(), middleware.Authorize("user"), RunMutation)
+	conductorRouter.GET("/mutations/results", middleware.Authenticate(), middleware.Authorize("user"), GetAllMutationResults)
+	conductorRouter.PUT("/mutations/results/:resultId", middleware.Authenticate(), middleware.Authorize("user"), UpdateMutationResult)
 
 	conductorRouter.GET("/artifact/:bucketName/:objectName", middleware.Authenticate(), middleware.Authorize("user"), DownloadArtifact)
 
