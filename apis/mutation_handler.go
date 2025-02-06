@@ -102,6 +102,19 @@ func RunMutation(c *gin.Context) {
 	Forward(conductorUrl + "/mutations/" + c.Param("id") + "/run")(c)
 }
 
+// @Summary Download mutation results
+// @Description Retrieve a list of all mutation results for a mutation and download them as a csv file
+// @Tags Mutations
+// @Security ApiKeyAuth
+// @Param id path string true "Mutation ID"
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
+// @Router /proteng-conductor/mutations/{id}/download [get]
+func DownloadMutationResults(c *gin.Context) {
+	conductorUrl := configs.Config.ConductorUrl
+	ForwardWithRawDataResponse(conductorUrl + "/mutations/" + c.Param("id") + "/download")(c)
+}
+
 // @Summary Get all mutation results
 // @Description Retrieve a list of all mutation results for a mutation
 // @Tags Mutations

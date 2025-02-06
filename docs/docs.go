@@ -929,6 +929,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/proteng-conductor/mutations/{id}/download": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve a list of all mutation results for a mutation and download them as a csv file",
+                "tags": [
+                    "Mutations"
+                ],
+                "summary": "Download mutation results",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mutation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/proteng-conductor/mutations/{id}/run": {
             "post": {
                 "security": [
@@ -2409,9 +2446,6 @@ const docTemplate = `{
                     "type": "integer",
                     "maximum": 3,
                     "minimum": 0
-                },
-                "state": {
-                    "type": "string"
                 }
             }
         },

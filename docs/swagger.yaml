@@ -114,8 +114,6 @@ definitions:
         maximum: 3
         minimum: 0
         type: integer
-      state:
-        type: string
     required:
     - input_protein
     - name
@@ -723,6 +721,30 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update an existing mutation
+      tags:
+      - Mutations
+  /proteng-conductor/mutations/{id}/download:
+    get:
+      description: Retrieve a list of all mutation results for a mutation and download
+        them as a csv file
+      parameters:
+      - description: Mutation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Download mutation results
       tags:
       - Mutations
   /proteng-conductor/mutations/{id}/run:
