@@ -22,6 +22,20 @@ func GetAllMutations(c *gin.Context) {
 	ForwardAddParam(conductorUrl+"/mutations?"+c.Request.URL.RawQuery, map[string]interface{}{"user_id": c.GetString("userId")})(c)
 }
 
+// @Summary Get histograms from all mutations
+// @Description Retrieve a list of histograms from all mutations
+// @Tags Mutations
+// @Security ApiKeyAuth
+// @Produce json
+// @Param job_id query string true "Filter by job ID"
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
+// @Router /proteng-conductor/mutations/histograms [get]
+func GetMutationHistograms(c *gin.Context) {
+	conductorUrl := configs.Config.ConductorUrl
+	Forward(conductorUrl + "/mutations/histograms?" + c.Request.URL.RawQuery)(c)
+}
+
 // @Summary Get a mutation by ID
 // @Description Retrieve details of a mutation by its ID
 // @Tags Mutations

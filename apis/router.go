@@ -48,6 +48,7 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.POST("/jobs/configurations", middleware.Authenticate(), middleware.Authorize("user"), SaveConfiguration)
 
 	conductorRouter.GET("/mutations", middleware.Authenticate(), middleware.Authorize("user"), GetAllMutations)
+	conductorRouter.GET("/mutations/histograms", middleware.Authenticate(), middleware.Authorize("user"), GetMutationHistograms)
 	conductorRouter.GET("/mutations/:id", middleware.Authenticate(), middleware.Authorize("user"), GetMutation)
 	conductorRouter.POST("/mutations", middleware.Authenticate(), middleware.Authorize("user"), CreateMutation)
 	conductorRouter.PUT("/mutations/:id", middleware.Authenticate(), middleware.Authorize("user"), UpdateMutation)

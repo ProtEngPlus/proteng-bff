@@ -652,6 +652,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/proteng-conductor/mutations/histograms": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve a list of histograms from all mutations",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mutations"
+                ],
+                "summary": "Get histograms from all mutations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by job ID",
+                        "name": "job_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/proteng-conductor/mutations/results": {
             "get": {
                 "security": [

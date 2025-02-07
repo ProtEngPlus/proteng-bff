@@ -778,6 +778,31 @@ paths:
       summary: Start a mutation by ID
       tags:
       - Mutations
+  /proteng-conductor/mutations/histograms:
+    get:
+      description: Retrieve a list of histograms from all mutations
+      parameters:
+      - description: Filter by job ID
+        in: query
+        name: job_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get histograms from all mutations
+      tags:
+      - Mutations
   /proteng-conductor/mutations/results:
     get:
       description: Retrieve a list of all mutation results for a mutation
