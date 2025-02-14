@@ -63,3 +63,18 @@ func UpdateQueryResult(c *gin.Context) {
 	conductorUrl := configs.Config.ConductorUrl
 	Forward(conductorUrl + "/query_results/" + c.Param("id"))(c)
 }
+
+// @Summary Download a query result by Job ID
+// @Description Retrieve details of a query result by its Job ID
+// @Tags Query results
+// @Security ApiKeyAuth
+// @Param id path string true "Query result Job ID"
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 401 {object} models.HttpResponseError "Unauthorized"
+// @Failure 404 {object} models.HttpResponseError "Not found"
+// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
+// @Router /proteng-conductor/query_results/{id}/download [get]
+func DownloadQueryResult(c *gin.Context) {
+	conductorUrl := configs.Config.ConductorUrl
+	ForwardWithRawDataResponse(conductorUrl + "/query_results/" + c.Param("id") + "/download")(c)
+}
