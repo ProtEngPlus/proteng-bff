@@ -48,18 +48,20 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.POST("/jobs/configurations", middleware.Authenticate(), middleware.Authorize("user"), SaveConfiguration)
 
 	conductorRouter.GET("/mutations", middleware.Authenticate(), middleware.Authorize("user"), GetAllMutations)
+	conductorRouter.GET("/mutations/histograms", middleware.Authenticate(), middleware.Authorize("user"), GetMutationHistograms)
 	conductorRouter.GET("/mutations/:id", middleware.Authenticate(), middleware.Authorize("user"), GetMutation)
 	conductorRouter.POST("/mutations", middleware.Authenticate(), middleware.Authorize("user"), CreateMutation)
 	conductorRouter.PUT("/mutations/:id", middleware.Authenticate(), middleware.Authorize("user"), UpdateMutation)
 	conductorRouter.DELETE("/mutations/:id", middleware.Authenticate(), middleware.Authorize("user"), DeleteMutation)
 	conductorRouter.POST("/mutations/:id/run", middleware.Authenticate(), middleware.Authorize("user"), RunMutation)
+	conductorRouter.GET("/mutations/:id/download", middleware.Authenticate(), middleware.Authorize("user"), DownloadMutationResults)
 	conductorRouter.GET("/mutations/results", middleware.Authenticate(), middleware.Authorize("user"), GetAllMutationResults)
 	conductorRouter.PUT("/mutations/results/:resultId", middleware.Authenticate(), middleware.Authorize("user"), UpdateMutationResult)
 
 	conductorRouter.GET("/artifact/:bucketName/:objectName", middleware.Authenticate(), middleware.Authorize("user"), DownloadArtifact)
 
 	conductorRouter.GET("/uniProt/:uniProtId", middleware.Authenticate(), middleware.Authorize("user"), GetProteinSequenceFromId)
-	
+
 	conductorRouter.GET("/query_results", middleware.Authenticate(), middleware.Authorize("user"), GetAllQueryResult)
 	conductorRouter.GET("/query_results/:id", middleware.Authenticate(), middleware.Authorize("user"), GetQueryResult)
 	conductorRouter.PUT("/query_results/:id", middleware.Authenticate(), middleware.Authorize("user"), UpdateQueryResult)

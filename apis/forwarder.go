@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 
@@ -118,5 +119,33 @@ func ForwardAddBody(url string, requestBody map[string]interface{}) func(c *gin.
 		}
 
 		gctx.JSON(resp.StatusCode, respBody)
+	}
+}
+
+func ForwardWithRawDataResponse(url string) func(c *gin.Context) {
+	return func(gctx *gin.Context) {
+		req, err := http.NewRequestWithContext(gctx, gctx.Request.Method, url, nil)
+		if err != nil {
+			apiutil.ApiResponseInternalServerError(gctx, err)
+			return
+		}
+		client := http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			apiutil.ApiResponseInternalServerError(gctx, err)
+			return
+		}
+		var respBody []byte
+		respBody, err = io.ReadAll(resp.Body)
+		if err != nil {
+			apiutil.ApiResponseInternalServerError(gctx, err)
+			return
+		}
+		for key, values := range resp.Header {
+			for _, value := range values {
+				gctx.Header(key, value)
+			}
+		}
+		gctx.Data(resp.StatusCode, resp.Header.Get("Content-Type"), respBody)
 	}
 }

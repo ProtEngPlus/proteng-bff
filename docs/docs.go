@@ -652,6 +652,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/proteng-conductor/mutations/histograms": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve a list of histograms from all mutations",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mutations"
+                ],
+                "summary": "Get histograms from all mutations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by job ID",
+                        "name": "job_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/proteng-conductor/mutations/results": {
             "get": {
                 "security": [
@@ -918,6 +958,43 @@ const docTemplate = `{
                         "description": "Not found",
                         "schema": {
                             "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-conductor/mutations/{id}/download": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve a list of all mutation results for a mutation and download them as a csv file",
+                "tags": [
+                    "Mutations"
+                ],
+                "summary": "Download mutation results",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Mutation ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
                         }
                     },
                     "500": {
@@ -2409,9 +2486,6 @@ const docTemplate = `{
                     "type": "integer",
                     "maximum": 3,
                     "minimum": 0
-                },
-                "state": {
-                    "type": "string"
                 }
             }
         },
