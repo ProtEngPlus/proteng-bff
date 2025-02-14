@@ -1023,6 +1023,37 @@ paths:
       summary: Update an existing query result
       tags:
       - Query results
+  /proteng-conductor/query_results/{id}/download:
+    get:
+      description: Retrieve details of a query result by its Job ID
+      parameters:
+      - description: Query result Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Download a query result by Job ID
+      tags:
+      - Query results
   /proteng-conductor/uniProt/{uniProtId}:
     get:
       consumes:

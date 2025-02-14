@@ -65,4 +65,5 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.GET("/query_results", middleware.Authenticate(), middleware.Authorize("user"), GetAllQueryResult)
 	conductorRouter.GET("/query_results/:id", middleware.Authenticate(), middleware.Authorize("user"), GetQueryResult)
 	conductorRouter.PUT("/query_results/:id", middleware.Authenticate(), middleware.Authorize("user"), UpdateQueryResult)
+	conductorRouter.GET("/query_results/:id/download", middleware.Authenticate(), middleware.Authorize("user"), DownloadQueryResult)
 }
