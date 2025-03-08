@@ -160,12 +160,12 @@
                 "summary": "Create a new job",
                 "parameters": [
                     {
-                        "description": "Job object",
+                        "description": "Create object",
                         "name": "job",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.JobInput"
+                            "$ref": "#/definitions/models.CreateJobInput"
                         }
                     }
                 ],
@@ -2438,6 +2438,99 @@
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "models.CopyQueryResultInput": {
+            "type": "object",
+            "properties": {
+                "complete_at": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "input_protein": {
+                    "type": "string"
+                },
+                "job_id": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CopyResultInput"
+                    }
+                },
+                "run_id": {
+                    "type": "integer"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CopyResultInput": {
+            "type": "object",
+            "properties": {
+                "acc_len": {
+                    "type": "integer"
+                },
+                "accession": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "e_values": {
+                    "type": "number"
+                },
+                "hsp_query_from": {
+                    "type": "number"
+                },
+                "hsp_query_to": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_selected": {
+                    "type": "boolean"
+                },
+                "max_score": {
+                    "type": "number"
+                },
+                "organisms": {
+                    "type": "string"
+                },
+                "percent_identity": {
+                    "type": "number"
+                },
+                "query_cover": {
+                    "type": "number"
+                },
+                "score": {
+                    "type": "number"
+                },
+                "sequences": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CreateJobInput": {
+            "type": "object",
+            "required": [
+                "job"
+            ],
+            "properties": {
+                "job": {
+                    "$ref": "#/definitions/models.JobInput"
+                },
+                "query_result": {
+                    "$ref": "#/definitions/models.CopyQueryResultInput"
                 }
             }
         },
