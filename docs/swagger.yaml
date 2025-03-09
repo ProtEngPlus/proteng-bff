@@ -794,6 +794,10 @@ paths:
         name: id
         required: true
         type: string
+      - description: Bookmark
+        in: query
+        name: is_bookmark
+        type: boolean
       responses:
         "200":
           description: Successful operation
