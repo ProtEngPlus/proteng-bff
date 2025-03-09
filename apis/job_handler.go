@@ -61,7 +61,7 @@ func GetJob(c *gin.Context) {
 // @Security ApiKeyAuth
 // @Accept json
 // @Produce json
-// @Param job body models.JobInput true "Job object"
+// @Param job body models.CreateJobInput true "Create object"
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
 // @Failure 400 {object} models.HttpResponseError "Bad request"
 // @Failure 500 {object} models.HttpResponseError "Internal Server Error"
