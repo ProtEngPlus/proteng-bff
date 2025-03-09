@@ -121,12 +121,13 @@ func RunMutation(c *gin.Context) {
 // @Tags Mutations
 // @Security ApiKeyAuth
 // @Param id path string true "Mutation ID"
+// @Param is_bookmark query bool false "Bookmark" only
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
 // @Failure 500 {object} models.HttpResponseError "Internal Server Error"
 // @Router /proteng-conductor/mutations/{id}/download [get]
 func DownloadMutationResults(c *gin.Context) {
 	conductorUrl := configs.Config.ConductorUrl
-	ForwardWithRawDataResponse(conductorUrl + "/mutations/" + c.Param("id") + "/download")(c)
+	ForwardWithRawDataResponse(conductorUrl + "/mutations/" + c.Param("id") + "/download?" + c.Request.URL.RawQuery)(c)
 }
 
 // @Summary Get all mutation results

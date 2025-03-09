@@ -988,6 +988,12 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Bookmark",
+                        "name": "is_bookmark",
+                        "in": "query"
                     }
                 ],
                 "responses": {
