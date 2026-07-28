@@ -40,7 +40,6 @@ building with docker will not bring the env file to the image. Instead, you will
 
 ```
 docker build -t proteng-bff .
-docker run -d --env_file=".env.dev" proteng-bff
-docker run -d --name proteng-bff  --env-file .env.dev proteng-bff
+docker run -d --name proteng-bff  --env-file .env.dev --network proteng-net  -p 8080:8080 proteng-bff
 
 ```

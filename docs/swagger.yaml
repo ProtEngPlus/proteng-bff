@@ -1,0 +1,1797 @@
+definitions:
+  models.AdminInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  models.ChangePasswordInput:
+    properties:
+      current_password:
+        type: string
+      new_password:
+        type: string
+    required:
+    - current_password
+    - new_password
+    type: object
+  models.ConfigurationInput:
+    properties:
+      artifact:
+        additionalProperties: true
+        type: object
+      description:
+        type: string
+      input_protein:
+        type: string
+      is_notification_on:
+        type: boolean
+      lab_result:
+        $ref: '#/definitions/models.LabResult'
+      meta:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      options:
+        additionalProperties: true
+        type: object
+      ref_job_id:
+        type: string
+      run_type:
+        type: string
+      stage_id:
+        maximum: 3
+        minimum: 0
+        type: integer
+      state:
+        type: string
+      user_id:
+        type: string
+    required:
+    - input_protein
+    - name
+    - options
+    - ref_job_id
+    - run_type
+    - user_id
+    type: object
+  models.CopyQueryResultInput:
+    properties:
+      complete_at:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      input_protein:
+        type: string
+      job_id:
+        type: string
+      result:
+        items:
+          $ref: '#/definitions/models.CopyResultInput'
+        type: array
+      run_id:
+        type: integer
+      state:
+        type: string
+    type: object
+  models.CopyResultInput:
+    properties:
+      acc_len:
+        type: integer
+      accession:
+        type: string
+      description:
+        type: string
+      e_values:
+        type: number
+      hsp_query_from:
+        type: number
+      hsp_query_to:
+        type: number
+      id:
+        type: string
+      is_selected:
+        type: boolean
+      max_score:
+        type: number
+      organisms:
+        type: string
+      percent_identity:
+        type: number
+      query_cover:
+        type: number
+      score:
+        type: number
+      sequences:
+        type: string
+    type: object
+  models.CreateJobInput:
+    properties:
+      job:
+        $ref: '#/definitions/models.JobInput'
+      query_result:
+        $ref: '#/definitions/models.CopyQueryResultInput'
+    required:
+    - job
+    type: object
+  models.ForgotPasswordInput:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  models.HttpResponseError:
+    properties:
+      code:
+        type: integer
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  models.HttpResponseOK:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+  models.JobInput:
+    properties:
+      artifact:
+        additionalProperties: true
+        type: object
+      description:
+        type: string
+      input_protein:
+        type: string
+      is_notification_on:
+        type: boolean
+      lab_result:
+        $ref: '#/definitions/models.LabResult'
+      meta:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      options:
+        additionalProperties: true
+        type: object
+      ref_job_id:
+        type: string
+      run_type:
+        type: string
+      stage_id:
+        maximum: 3
+        minimum: 0
+        type: integer
+    required:
+    - input_protein
+    - name
+    - options
+    - run_type
+    type: object
+  models.LabResult:
+    properties:
+      scores:
+        items:
+          type: number
+        type: array
+      sequences:
+        items:
+          type: string
+        type: array
+      total:
+        minimum: 0
+        type: integer
+    required:
+    - scores
+    - sequences
+    type: object
+  models.MutationInput:
+    properties:
+      input_protein:
+        type: string
+      job_id:
+        type: string
+      options:
+        additionalProperties: true
+        type: object
+    type: object
+  models.MutationResultInput:
+    properties:
+      is_bookmark:
+        type: boolean
+    type: object
+  models.QueryResultInput:
+    properties:
+      input_protein:
+        type: string
+      is_selected:
+        type: boolean
+      job_id:
+        type: string
+    type: object
+  models.ResetPasswordInput:
+    properties:
+      password:
+        type: string
+    required:
+    - password
+    type: object
+  models.SendVerificationInput:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  models.SignInAdminInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.SignInInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.UserInput:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role:
+        items:
+          type: string
+        type: array
+      surname:
+        type: string
+      user_role:
+        type: string
+    type: object
+info:
+  contact:
+    email: proteng.plus@gmail.com
+    name: Proteng API Support
+  title: Proteng API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      description: Check the health of the service
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+      summary: Health Check Endpoint
+      tags:
+      - Healthchack
+  /proteng-conductor/artifact/{bucketName}/{objectName}:
+    get:
+      consumes:
+      - application/json
+      description: Download an artifact of a job
+      parameters:
+      - description: Bucket Name
+        in: path
+        name: bucketName
+        required: true
+        type: string
+      - description: Object Name
+        in: path
+        name: objectName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Download Artifact
+      tags:
+      - Artifact
+  /proteng-conductor/jobs:
+    get:
+      description: Retrieve a list of all jobs
+      parameters:
+      - description: Filter state of the jobs
+        in: query
+        name: state
+        type: string
+      - description: Filter name of the job
+        in: query
+        name: name
+        type: string
+      - description: Sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort direction (asc/desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all jobs
+      tags:
+      - Jobs
+    post:
+      consumes:
+      - application/json
+      description: Create a new job with the provided details
+      parameters:
+      - description: Create object
+        in: body
+        name: job
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateJobInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new job
+      tags:
+      - Jobs
+  /proteng-conductor/jobs/{id}:
+    delete:
+      description: Delete a job by its ID
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a job by ID
+      tags:
+      - Jobs
+    get:
+      description: Retrieve details of a job by its ID
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a job by ID
+      tags:
+      - Jobs
+    put:
+      consumes:
+      - application/json
+      description: Update an existing job with the provided details
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Job object
+        in: body
+        name: job
+        required: true
+        schema:
+          $ref: '#/definitions/models.JobInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing job
+      tags:
+      - Jobs
+  /proteng-conductor/jobs/{id}/run:
+    post:
+      description: Start a job by its ID
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Start a job by ID
+      tags:
+      - Jobs
+  /proteng-conductor/jobs/configurations:
+    get:
+      description: Retrieve a list of all configurations
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all configurations
+      tags:
+      - Configurations
+    post:
+      consumes:
+      - application/json
+      description: Create a new configuration with the provided details
+      parameters:
+      - description: Configuration object
+        in: body
+        name: configuration
+        required: true
+        schema:
+          $ref: '#/definitions/models.ConfigurationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Save a new configuration
+      tags:
+      - Configurations
+  /proteng-conductor/jobs/dashboard:
+    get:
+      description: Retrieve information about the jobs to show in the dashboard page
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get job dashboard
+      tags:
+      - Jobs
+  /proteng-conductor/mutations:
+    get:
+      description: Retrieve a list of all mutations
+      parameters:
+      - description: Filter by job ID
+        in: query
+        name: job_id
+        required: true
+        type: string
+      - description: Sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort direction (asc/desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all mutations
+      tags:
+      - Mutations
+    post:
+      consumes:
+      - application/json
+      description: Create a new mutation with the provided details
+      parameters:
+      - description: Mutation object
+        in: body
+        name: mutation
+        required: true
+        schema:
+          $ref: '#/definitions/models.MutationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new mutation
+      tags:
+      - Mutations
+  /proteng-conductor/mutations/{id}:
+    delete:
+      description: Delete a mutation by its ID
+      parameters:
+      - description: Mutation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a mutation by ID
+      tags:
+      - Mutations
+    get:
+      description: Retrieve details of a mutation by its ID
+      parameters:
+      - description: Mutation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a mutation by ID
+      tags:
+      - Mutations
+    put:
+      consumes:
+      - application/json
+      description: Update an existing mutation with the provided details
+      parameters:
+      - description: Mutation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Mutation object
+        in: body
+        name: mutation
+        required: true
+        schema:
+          $ref: '#/definitions/models.MutationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing mutation
+      tags:
+      - Mutations
+  /proteng-conductor/mutations/{id}/download:
+    get:
+      description: Retrieve a list of all mutation results for a mutation and download
+        them as a csv file
+      parameters:
+      - description: Mutation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Bookmark
+        in: query
+        name: is_bookmark
+        type: boolean
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Download mutation results
+      tags:
+      - Mutations
+  /proteng-conductor/mutations/{id}/run:
+    post:
+      description: Start a mutation by its ID
+      parameters:
+      - description: Mutation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Start a mutation by ID
+      tags:
+      - Mutations
+  /proteng-conductor/mutations/histograms:
+    get:
+      description: Retrieve a list of histograms from all mutations
+      parameters:
+      - description: Filter by job ID
+        in: query
+        name: job_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get histograms from all mutations
+      tags:
+      - Mutations
+  /proteng-conductor/mutations/results:
+    get:
+      description: Retrieve a list of all mutation results for a mutation
+      parameters:
+      - description: Filter by mutation ID
+        in: query
+        name: mutation_id
+        required: true
+        type: string
+      - description: Sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort direction (asc/desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all mutation results
+      tags:
+      - Mutations
+  /proteng-conductor/mutations/results/{resultId}:
+    put:
+      consumes:
+      - application/json
+      description: Update an existing mutation result with the provided details
+      parameters:
+      - description: MutationResult ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: MutationResult object
+        in: body
+        name: mutationResult
+        required: true
+        schema:
+          $ref: '#/definitions/models.MutationResultInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing mutation result
+      tags:
+      - Mutation
+  /proteng-conductor/query_results:
+    get:
+      description: Retrieve a list of all query results
+      parameters:
+      - description: Filter by job ID
+        in: query
+        name: job_id
+        required: true
+        type: string
+      - description: Filter by selected
+        in: query
+        name: is_selected
+        type: boolean
+      - description: Filter by organism
+        in: query
+        name: organism
+        type: string
+      - description: Filter by percentIdentityFrom
+        in: query
+        name: percentIdentityFrom
+        type: number
+      - description: Filter by percentIdentityTo
+        in: query
+        name: percentIdentityTo
+        type: number
+      - description: Filter by eValuesFrom
+        in: query
+        name: eValuesFrom
+        type: number
+      - description: Filter by eValuesTo
+        in: query
+        name: eValuesTo
+        type: number
+      - description: Filter by queryCoverFrom
+        in: query
+        name: queryCoverFrom
+        type: number
+      - description: Filter by queryCoverTo
+        in: query
+        name: queryCoverTo
+        type: number
+      - description: Sort by
+        in: query
+        name: sort
+        type: string
+      - description: Sort direction (asc/desc)
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all query results
+      tags:
+      - Query results
+  /proteng-conductor/query_results/{id}:
+    get:
+      description: Retrieve details of a query result by its ID
+      parameters:
+      - description: Query result ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a query result by ID
+      tags:
+      - Query results
+    put:
+      consumes:
+      - application/json
+      description: Update an existing query result with the provided details
+      parameters:
+      - description: Query Result ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Query result object
+        in: body
+        name: mutation
+        required: true
+        schema:
+          $ref: '#/definitions/models.QueryResultInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing query result
+      tags:
+      - Query results
+  /proteng-conductor/query_results/{id}/download:
+    get:
+      description: Retrieve details of a query result by its Job ID
+      parameters:
+      - description: Query result Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Download a query result by Job ID
+      tags:
+      - Query results
+  /proteng-conductor/uniProt/{uniProtId}:
+    get:
+      consumes:
+      - application/json
+      description: Get Protein Sequence From UniProtId
+      parameters:
+      - description: UniProt Id
+        in: path
+        name: uniProtId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Protein Sequence From Id
+      tags:
+      - UniProt
+  /proteng-user-mgmt/admins:
+    get:
+      description: Retrieve a list of all admins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve all admins
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a new admin with the provided details
+      parameters:
+      - description: Admin object
+        in: body
+        name: admin
+        required: true
+        schema:
+          $ref: '#/definitions/models.AdminInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Create a new admin
+      tags:
+      - Admin
+  /proteng-user-mgmt/admins/{id}:
+    delete:
+      description: Delete an admin by providing its ID
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete an admin
+      tags:
+      - Admin
+    get:
+      description: Retrieve an admin by providing its ID
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve an admin by ID
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update an existing admin with the provided details
+      parameters:
+      - description: Admin ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Admin object
+        in: body
+        name: admin
+        required: true
+        schema:
+          $ref: '#/definitions/models.AdminInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing admin
+      tags:
+      - Admin
+  /proteng-user-mgmt/auth/changepassword:
+    patch:
+      consumes:
+      - application/json
+      description: Changes the password while logged in
+      parameters:
+      - description: User credentials
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.ChangePasswordInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: change password
+      tags:
+      - Authentication
+  /proteng-user-mgmt/auth/forgotpassword:
+    post:
+      consumes:
+      - application/json
+      description: Initiates the forgot password process by sending a reset email
+        to the user
+      parameters:
+      - description: User email
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.ForgotPasswordInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Initiate forgot password process
+      tags:
+      - Authentication
+  /proteng-user-mgmt/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Signs in a user by validating the provided credentials
+      parameters:
+      - description: User credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignInInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Sign in a user
+      tags:
+      - Authentication
+  /proteng-user-mgmt/auth/login/admin:
+    post:
+      consumes:
+      - application/json
+      description: Signs in an admin by validating the provided credentials
+      parameters:
+      - description: Admin credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignInAdminInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Sign in an admin
+      tags:
+      - Authentication
+  /proteng-user-mgmt/auth/resetpassword/{resetToken}:
+    patch:
+      consumes:
+      - application/json
+      description: Resets the password using the provided reset token
+      parameters:
+      - description: Reset Token
+        in: path
+        name: resetToken
+        required: true
+        type: string
+      - description: New password
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.ResetPasswordInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Reset password
+      tags:
+      - Authentication
+  /proteng-user-mgmt/auth/sentverification:
+    post:
+      consumes:
+      - application/json
+      description: Initiates the email verification process by sending a verification
+        email to the user
+      parameters:
+      - description: User email
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.SendVerificationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: initiates verification process
+      tags:
+      - Authentication
+  /proteng-user-mgmt/auth/verifyemail/{verificationToken}:
+    patch:
+      consumes:
+      - application/json
+      description: Verifies the email using the provided verification token
+      parameters:
+      - description: Verification Token
+        in: path
+        name: verificationToken
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Verify email
+      tags:
+      - Authentication
+  /proteng-user-mgmt/me:
+    delete:
+      description: Delete the currently authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete the currently authenticated user
+      tags:
+      - User management
+    get:
+      description: Retrieve details of the currently authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get current user
+      tags:
+      - User management
+    put:
+      consumes:
+      - application/json
+      description: Update details of the currently authenticated user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update the currently authenticated user
+      tags:
+      - User management
+  /proteng-user-mgmt/users:
+    get:
+      description: Retrieve a list of all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve all users
+      tags:
+      - User management
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user with the provided details
+      parameters:
+      - description: User object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Create a new user
+      tags:
+      - User management
+  /proteng-user-mgmt/users/{id}:
+    delete:
+      description: Delete a user by providing its ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a user
+      tags:
+      - User management
+    get:
+      description: Retrieve a user by providing its ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Retrieve a user by ID
+      tags:
+      - User management
+    put:
+      consumes:
+      - application/json
+      description: Update an existing user with the provided details
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an existing user
+      tags:
+      - User management
+securityDefinitions:
+  ApiKeyAuth:
+    in: Header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
