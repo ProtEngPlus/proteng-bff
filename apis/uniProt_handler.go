@@ -1,7 +1,7 @@
 package apis
 
 import (
-    "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 	"github.com/protengplus/proteng-bff/configs"
 )
 
