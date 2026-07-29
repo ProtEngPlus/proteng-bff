@@ -1,45 +1,5 @@
 # proteng-bff
 
-## Running in local
+Backend-for-Frontend: the Gin API gateway between [protengplus-frontend](https://github.com/ProtEngPlus/protengplus-frontend) and the backend services ([proteng-user-mgmt](https://github.com/ProtEngPlus/proteng-user-mgmt), [proteng-conductor](https://github.com/ProtEngPlus/proteng-conductor)). Handles JWT auth and routes requests to the appropriate service.
 
-### 1. get `.env.dev` file from notion
-
-### 2. install packages
-
-```
-go mod tidy
-```
-
-### 3. run development
-
-- setting local environmental variable `ENV`, should be `dev`
-- note that if you put set `ENV` to `<environment>` the app will load env vars from `.env.<environment>` file
-
-MacOS
-
-```
-ENV=dev go run main.go
-```
-
-Windows - CMD
-
-```
-set ENV=dev && go run main.go
-```
-
-Windows - Powershell
-
-```
-$Env:ENV = "dev" && go run main.go
-$Env:ENV = "dev" ; go run main.go
-```
-
-## Building
-
-building with docker will not bring the env file to the image. Instead, you will have to specify in during the run time
-
-```
-docker build -t proteng-bff .
-docker run -d --name proteng-bff  --env-file .env.dev --network proteng-net  -p 8080:8080 proteng-bff
-
-```
+See [SETUP.md](./SETUP.md) to get it running locally, and [CONTRIBUTING.md](./CONTRIBUTING.md) for commit conventions and pre-commit hooks.
