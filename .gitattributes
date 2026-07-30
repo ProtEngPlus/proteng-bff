@@ -1,1 +1,4 @@
 *.sh text eol=lf
+docs/swagger.json text eol=lf
+docs/swagger.yaml text eol=lf
+docs/docs.go text eol=lf

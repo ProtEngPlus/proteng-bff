@@ -42,7 +42,7 @@ func main() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	// Health Check Endpoint
-	r.GET("/health", HealthCheck)
+	r.GET("/healthz", HealthCheck)
 
 	// CORS
 	r.Use(CORSMiddleware())
@@ -89,7 +89,7 @@ func CORSMiddleware() gin.HandlerFunc {
 // @Tags Healthchack
 // @Produce json
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
-// @Router /health [get]
+// @Router /healthz [get]
 func HealthCheck(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "ok"})
+	c.JSON(200, gin.H{"code": 200, "data": "ready", "message": "ok"})
 }

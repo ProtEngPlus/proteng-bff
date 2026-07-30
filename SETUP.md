@@ -16,7 +16,7 @@
 
 3. **Run** — `./run.sh` (Git Bash on Windows, or macOS/Linux terminal)
 
-   (just sets `ENV=local` and runs `go run main.go` — `ENV` picks which `.env.<ENV>` file loads, there is no `.env.dev` anymore. Run manually with `ENV=local go run main.go` if you'd rather not use the script. Note: plain `cmd.exe`/PowerShell can't run `.sh` directly — use Git Bash.)
+   (installs `swag` if missing, regenerates Swagger docs, then sets `ENV=local` and runs `go run main.go` — `ENV` picks which `.env.<ENV>` file loads, there is no `.env.dev` anymore. Run manually with `ENV=local go run main.go` if you'd rather not use the script. Note: plain `cmd.exe`/PowerShell can't run `.sh` directly — use Git Bash.)
 
    Done when: terminal prints `proteng-bff is running on :8080` (or whatever `HTTP_PORT` is set to), with no crash after.
 
@@ -48,6 +48,13 @@ pre-commit install --hook-type pre-commit --hook-type pre-push --hook-type commi
 ```
 
 Run everything manually: `pre-commit run --all-files`
+
+## API docs
+
+bff is the single API surface the frontend talks to (it never calls proteng-conductor/proteng-user-mgmt directly) — so bff's Swagger docs are the API docs for the whole project. No separate docs repo/service needed.
+
+- **View**: run bff (`./run.sh`), open `http://localhost:8080/swagger/index.html`
+- **Regenerate**: automatic — `./run.sh` runs `swag init` on every start (deterministic, ~0.5s, no manual step). Just annotate new handlers with `@Router`/`@Success`/etc. comments (same pattern as existing handlers) and run the app; `docs/docs.go`/`swagger.json`/`swagger.yaml` update themselves. Commit the regenerated docs files along with your handler changes.
 
 ## Build (optional, for deployment testing)
 

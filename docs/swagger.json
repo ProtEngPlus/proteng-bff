@@ -9,7 +9,7 @@
         "version": "1.0"
     },
     "paths": {
-        "/health": {
+        "/healthz": {
             "get": {
                 "description": "Check the health of the service",
                 "produces": [
