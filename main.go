@@ -65,6 +65,7 @@ func main() {
 	if httpPort == "" {
 		httpPort = "8080"
 	}
+	logger.Zap.Info("proteng-bff is running on :" + httpPort)
 	err := r.Run(":" + httpPort)
 	if err != nil {
 		logger.Zap.Fatal(fmt.Sprintf("Error starting server: %v", err))
