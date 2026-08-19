@@ -8,6 +8,12 @@
    ```
    Fill in real values. Done when: `.env.local` exists with real values (not the empty template).
 
+   `ACCESS_TOKEN_PUBLIC_KEY` must be the public half of the same RSA keypair as `proteng-user-mgmt`'s `ACCESS_TOKEN_PRIVATE_KEY` (bff only verifies tokens; user-mgmt signs them) — derive it from that private key:
+
+   ```sh
+   openssl rsa -in private.pem -pubout | tr -d '\r' | openssl base64 -A
+   ```
+
 2. **Install dependencies**
    ```sh
    go mod tidy
