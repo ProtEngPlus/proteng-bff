@@ -964,26 +964,32 @@ paths:
         name: organism
         type: string
       - description: Filter by percentIdentityFrom
+        format: float64
         in: query
         name: percentIdentityFrom
         type: number
       - description: Filter by percentIdentityTo
+        format: float64
         in: query
         name: percentIdentityTo
         type: number
       - description: Filter by eValuesFrom
+        format: float64
         in: query
         name: eValuesFrom
         type: number
       - description: Filter by eValuesTo
+        format: float64
         in: query
         name: eValuesTo
         type: number
       - description: Filter by queryCoverFrom
+        format: float64
         in: query
         name: queryCoverFrom
         type: number
       - description: Filter by queryCoverTo
+        format: float64
         in: query
         name: queryCoverTo
         type: number
