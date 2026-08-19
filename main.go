@@ -91,5 +91,5 @@ func CORSMiddleware() gin.HandlerFunc {
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
 // @Router /healthz [get]
 func HealthCheck(c *gin.Context) {
-	c.JSON(200, gin.H{"code": 200, "data": "ready", "message": "ok"})
+	c.JSON(200, gin.H{"code": 200, "data": "ready", "message": "ok", "environment": configs.Config.Env})
 }

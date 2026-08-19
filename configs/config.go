@@ -26,7 +26,7 @@ type config struct {
 func AutomaticLoadEnv() {
 	if env, ok := os.LookupEnv("ENV"); ok {
 		if err := LoadEnvFromPath(".env." + env); err != nil {
-			logger.Zap.Fatal(fmt.Sprintf("Error loading .env file from file: %v", err))
+			logger.Zap.Info(fmt.Sprintf("No .env.%s file found, using environment variables as-is: %v", env, err))
 		} else {
 			logger.Zap.Info(fmt.Sprintf("Running in environment: %s", env))
 		}
