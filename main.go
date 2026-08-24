@@ -39,7 +39,9 @@ func main() {
 
 	docs.SwaggerInfo.BasePath = "/"
 
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	if configs.Config.Env == "local" {
+		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	}
 
 	// Health Check Endpoint
 	r.GET("/healthz", HealthCheck)
