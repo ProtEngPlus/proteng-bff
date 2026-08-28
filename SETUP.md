@@ -3,26 +3,30 @@
 ## Run locally
 
 1. **Copy the env file**
+
    ```sh
    cp .env.example .env.local
    ```
+
    Fill in real values. Done when: `.env.local` exists with real values (not the empty template).
 
-   `ACCESS_TOKEN_PUBLIC_KEY` must be the public half of the same RSA keypair as `proteng-user-mgmt`'s `ACCESS_TOKEN_PRIVATE_KEY` (bff only verifies tokens; user-mgmt signs them) — derive it from that private key:
+   `ACCESS_TOKEN_PUBLIC_KEY` must be the public half of the same RSA keypair as `proteng-user-mgmt`'s `ACCESS_TOKEN_PRIVATE_KEY` (bff only verifies tokens; user-mgmt signs them) - derive it from that private key:
 
    ```sh
    openssl rsa -in private.pem -pubout | tr -d '\r' | openssl base64 -A
    ```
 
 2. **Install dependencies**
+
    ```sh
    go mod tidy
    ```
+
    Done when: exits 0, no errors.
 
-3. **Run** — `./run.sh` (Git Bash on Windows, or macOS/Linux terminal)
+3. **Run** - `./run.sh` (Git Bash on Windows, or macOS/Linux terminal)
 
-   (installs `swag` if missing, regenerates Swagger docs, then sets `ENV=local` and runs `go run main.go` — `ENV` picks which `.env.<ENV>` file loads, there is no `.env.dev` anymore. Run manually with `ENV=local go run main.go` if you'd rather not use the script. Note: plain `cmd.exe`/PowerShell can't run `.sh` directly — use Git Bash.)
+   (installs `swag` if missing, regenerates Swagger docs, then sets `ENV=local` and runs `go run main.go` - `ENV` picks which `.env.<ENV>` file loads, there is no `.env.dev` anymore. Run manually with `ENV=local go run main.go` if you'd rather not use the script. Note: plain `cmd.exe`/PowerShell can't run `.sh` directly - use Git Bash.)
 
    Done when: terminal prints `proteng-bff is running on :8080` (or whatever `HTTP_PORT` is set to), with no crash after.
 
@@ -36,7 +40,7 @@ gofmt -l -w .
 
 ## Lint
 
-`go vet` reports issues but does not autofix — fix them by hand. Both this and `gofmt` also run in CI (`.github/workflows/test-build-dev.yaml`) on every push.
+`go vet` reports issues but does not autofix - fix them by hand. Both this and `gofmt` also run in CI (`.github/workflows/test-build-dev.yaml`) on every push.
 
 ```sh
 go vet ./...
@@ -57,14 +61,14 @@ Run everything manually: `pre-commit run --all-files`
 
 ## API docs
 
-bff is the single API surface the frontend talks to (it never calls proteng-conductor/proteng-user-mgmt directly) — so bff's Swagger docs are the API docs for the whole project. No separate docs repo/service needed.
+bff is the single API surface the frontend talks to (it never calls proteng-conductor/proteng-user-mgmt directly) - so bff's Swagger docs are the API docs for the whole project. No separate docs repo/service needed.
 
 - **View**: run bff (`./run.sh`), open `http://localhost:8080/swagger/index.html`
-- **Regenerate**: automatic — `./run.sh` runs `swag init` on every start (deterministic, ~0.5s, no manual step). Just annotate new handlers with `@Router`/`@Success`/etc. comments (same pattern as existing handlers) and run the app; `docs/docs.go`/`swagger.json`/`swagger.yaml` update themselves. Commit the regenerated docs files along with your handler changes.
+- **Regenerate**: automatic - `./run.sh` runs `swag init` on every start (deterministic, ~0.5s, no manual step). Just annotate new handlers with `@Router`/`@Success`/etc. comments (same pattern as existing handlers) and run the app; `docs/docs.go`/`swagger.json`/`swagger.yaml` update themselves. Commit the regenerated docs files along with your handler changes.
 
 ## Build (optional, for deployment testing)
 
-Env vars are not baked into the image — pass them at run time:
+Env vars are not baked into the image - pass them at run time:
 
 ```sh
 docker build -t proteng-bff .
