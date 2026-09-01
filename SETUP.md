@@ -1,76 +1,53 @@
 # Setup
 
-## Run locally
+Setup ทั้งระบบครั้งแรกดูที่ [Guidebook](https://github.com/ProtEngPlus/manual-guides-2023/blob/main/README.md) ไฟล์นี้มีแค่รายละเอียดเฉพาะของ `proteng-bff`
 
-1. **Copy the env file**
+## รันบนเครื่อง
 
-   ```sh
-   cp .env.example .env.local
-   ```
+ขั้นตอนหลัก (`cp .env.example .env.local` → `go mod tidy` → `./run.sh`) อยู่ใน Guidebook §4.4
+ที่ต้องรู้เพิ่มเฉพาะ bff:
 
-   Fill in real values. Done when: `.env.local` exists with real values (not the empty template).
+- `.env.local` ต้องมี `ACCESS_TOKEN_PUBLIC_KEY` เป็น public key คู่เดียวกับ
+  `ACCESS_TOKEN_PRIVATE_KEY` ของ `proteng-user-mgmt` (bff แค่ verify token, user-mgmt เป็นคนเซ็น)
+  แปลงจาก private key:
 
-   `ACCESS_TOKEN_PUBLIC_KEY` must be the public half of the same RSA keypair as `proteng-user-mgmt`'s `ACCESS_TOKEN_PRIVATE_KEY` (bff only verifies tokens; user-mgmt signs them) - derive it from that private key:
+  ```sh
+  openssl rsa -in private.pem -pubout | tr -d '\r' | openssl base64 -A
+  ```
 
-   ```sh
-   openssl rsa -in private.pem -pubout | tr -d '\r' | openssl base64 -A
-   ```
+- `./run.sh` ลง `swag` ถ้ายังไม่มี แล้ว regenerate Swagger doc ก่อนตั้ง `ENV=local` แล้ว
+  `go run main.go` (ไม่มี `.env.dev` แล้ว รันมือด้วย `ENV=local go run main.go` ก็ได้)
+- bff ไม่ต่อ DB/queue เอง คุยผ่าน HTTP ไป conductor กับ user-mgmt เท่านั้น
+- เสร็จเมื่อ terminal พิมพ์ `proteng-bff is running on :8080` (หรือ `HTTP_PORT` ที่ตั้ง) แล้วไม่ crash
 
-2. **Install dependencies**
+## Format & lint
 
-   ```sh
-   go mod tidy
-   ```
-
-   Done when: exits 0, no errors.
-
-3. **Run** - `./run.sh` (Git Bash on Windows, or macOS/Linux terminal)
-
-   (installs `swag` if missing, regenerates Swagger docs, then sets `ENV=local` and runs `go run main.go` - `ENV` picks which `.env.<ENV>` file loads, there is no `.env.dev` anymore. Run manually with `ENV=local go run main.go` if you'd rather not use the script. Note: plain `cmd.exe`/PowerShell can't run `.sh` directly - use Git Bash.)
-
-   Done when: terminal prints `proteng-bff is running on :8080` (or whatever `HTTP_PORT` is set to), with no crash after.
-
-## Format
-
-`gofmt` autofixes on save/commit. Run manually against the whole repo:
+`gofmt` autofix ตอน save/commit, `go vet` รายงานอย่างเดียวต้องแก้เอง รันมือทั้ง repo:
 
 ```sh
 gofmt -l -w .
-```
-
-## Lint
-
-`go vet` reports issues but does not autofix - fix them by hand. Both this and `gofmt` also run in CI (`.github/workflows/test-build-dev.yaml`) on every push.
-
-```sh
 go vet ./...
 ```
 
-## Pre-commit hooks
-
-Format + lint above run automatically via [pre-commit](https://pre-commit.com/) on `git commit`; `go build` + `go test` additionally run on `git push`. See [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
-
-Install once per clone:
-
-```sh
-pip install pre-commit
-pre-commit install --hook-type pre-commit --hook-type pre-push --hook-type commit-msg
-```
-
-Run everything manually: `pre-commit run --all-files`
+ทั้งคู่รันเป็น pre-commit hook ให้อัตโนมัติ (ดู [CONTRIBUTING.md](./CONTRIBUTING.md)) และรันใน CI
+ทุก push ด้วย
 
 ## API docs
 
-bff is the single API surface the frontend talks to (it never calls proteng-conductor/proteng-user-mgmt directly) - so bff's Swagger docs are the API docs for the whole project. No separate docs repo/service needed.
+bff เป็น API surface เดียวที่ frontend คุยด้วย (ไม่เรียก conductor/user-mgmt ตรง) เพราะงั้น
+Swagger ของ bff คือ API docs ของทั้ง project ไม่ต้องมี doc service แยก
 
-- **View**: run bff (`./run.sh`), open `http://localhost:8080/swagger/index.html`
-- **Regenerate**: automatic - `./run.sh` runs `swag init` on every start (deterministic, ~0.5s, no manual step). Just annotate new handlers with `@Router`/`@Success`/etc. comments (same pattern as existing handlers) and run the app; `docs/docs.go`/`swagger.json`/`swagger.yaml` update themselves. Commit the regenerated docs files along with your handler changes.
+- **ดู**: รัน bff (`./run.sh`) เปิด `http://localhost:8080/swagger/index.html`
+- **regenerate**: อัตโนมัติ `./run.sh` รัน `swag init` ทุกครั้งที่สตาร์ท (~0.5s) แค่ใส่ annotation
+  `@Router` / `@Success` / ฯลฯ ให้ handler ใหม่ (แบบเดียวกับ handler เดิม) แล้วรัน app ไฟล์
+  `docs/docs.go` / `swagger.json` / `swagger.yaml` อัปเดตเอง commit ไฟล์ที่ regenerate ไปพร้อมโค้ด
+  handler
 
-## Build (optional, for deployment testing)
+## Build (ถ้าจะทดสอบ deploy)
 
-Env vars are not baked into the image - pass them at run time:
+env var ไม่ถูก bake เข้า image ส่งตอน run:
 
 ```sh
 docker build -t proteng-bff .
-docker run -d --name proteng-bff --env-file .env.local --network proteng-net -p 8080:8080 proteng-bff
+docker run -d --name proteng-bff --env-file .env.local -p 8080:8080 proteng-bff
 ```
