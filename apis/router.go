@@ -7,19 +7,20 @@ import (
 )
 
 func InitRouter(r *gin.Engine) {
-
 	userRouter := r.Group("/proteng-user-mgmt")
 	// usermgmtUrl := configs.Config.UserMgmtUrl
 
 	userRouter.GET("/users", middleware.Authenticate(), middleware.Authorize("admin"), GetAllUsers)
 	userRouter.GET("/users/:id", middleware.Authenticate(), middleware.Authorize("admin"), GetUserByID)
-	userRouter.POST("/users", CreateUser)
 	userRouter.PUT("/users/:id", middleware.Authenticate(), middleware.Authorize("admin"), UpdateUser)
 	userRouter.DELETE("/users/:id", middleware.Authenticate(), middleware.Authorize("admin"), DeleteUser)
-	userRouter.POST("/auth/login", SignInUser)
+
 	userRouter.GET("/me", middleware.Authenticate(), GetMe)
 	userRouter.PUT("/me", middleware.Authenticate(), UpdateMe)
 	userRouter.DELETE("/me", middleware.Authenticate(), DeleteMe)
+
+	userRouter.POST("/auth/register", RegisterUser)
+	userRouter.POST("/auth/login", SignInUser)
 	userRouter.POST("/auth/forgotpassword", ForgotPassword)
 	userRouter.PATCH("/auth/resetpassword/:resetToken", ResetPassword)
 	userRouter.PATCH("/auth/changepassword", middleware.Authenticate(), ChangePassword)

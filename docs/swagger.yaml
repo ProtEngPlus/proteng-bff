@@ -1438,6 +1438,44 @@ paths:
       summary: Sign in an admin
       tags:
       - Authentication
+  /proteng-user-mgmt/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user and sends a verification email in a single call
+      parameters:
+      - description: User object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "409":
+          description: Email already registered
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Register a new user
+      tags:
+      - Authentication
   /proteng-user-mgmt/auth/resetpassword/{resetToken}:
     patch:
       consumes:
@@ -1651,35 +1689,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Retrieve all users
-      tags:
-      - User management
-    post:
-      consumes:
-      - application/json
-      description: Creates a new user with the provided details
-      parameters:
-      - description: User object
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/models.UserInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      summary: Create a new user
       tags:
       - User management
   /proteng-user-mgmt/users/{id}:
