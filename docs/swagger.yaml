@@ -121,6 +121,15 @@ definitions:
     required:
     - job
     type: object
+  models.ExperimentalResultInput:
+    properties:
+      actual_assay_score:
+        type: number
+      measured_at:
+        type: string
+      note:
+        type: string
+    type: object
   models.ForgotPasswordInput:
     properties:
       email:
@@ -843,6 +852,116 @@ paths:
       summary: Start a mutation by ID
       tags:
       - Mutations
+  /proteng-conductor/mutations/experimental-results:
+    get:
+      description: Retrieve the wet-lab results of the current user
+      parameters:
+      - description: Filter by job ID
+        in: query
+        name: job_id
+        type: string
+      - description: Filter by mutation ID
+        in: query
+        name: mutation_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all experimental results
+      tags:
+      - Experimental Results
+  /proteng-conductor/mutations/experimental-results/by-mutation-result/{mutationResultId}:
+    delete:
+      description: Clear the wet-lab result of a mutation result
+      parameters:
+      - description: MutationResult ID
+        in: path
+        name: mutationResultId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete an experimental result
+      tags:
+      - Experimental Results
+    put:
+      consumes:
+      - application/json
+      description: Save the wet-lab result of a mutation result, replacing any existing
+        one
+      parameters:
+      - description: MutationResult ID
+        in: path
+        name: mutationResultId
+        required: true
+        type: string
+      - description: ExperimentalResult object
+        in: body
+        name: experimentalResult
+        required: true
+        schema:
+          $ref: '#/definitions/models.ExperimentalResultInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create or overwrite an experimental result
+      tags:
+      - Experimental Results
   /proteng-conductor/mutations/histograms:
     get:
       description: Retrieve a list of histograms from all mutations
@@ -964,32 +1083,26 @@ paths:
         name: organism
         type: string
       - description: Filter by percentIdentityFrom
-        format: float64
         in: query
         name: percentIdentityFrom
         type: number
       - description: Filter by percentIdentityTo
-        format: float64
         in: query
         name: percentIdentityTo
         type: number
       - description: Filter by eValuesFrom
-        format: float64
         in: query
         name: eValuesFrom
         type: number
       - description: Filter by eValuesTo
-        format: float64
         in: query
         name: eValuesTo
         type: number
       - description: Filter by queryCoverFrom
-        format: float64
         in: query
         name: queryCoverFrom
         type: number
       - description: Filter by queryCoverTo
-        format: float64
         in: query
         name: queryCoverTo
         type: number
@@ -1438,6 +1551,44 @@ paths:
       summary: Sign in an admin
       tags:
       - Authentication
+  /proteng-user-mgmt/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user and sends a verification email in a single call
+      parameters:
+      - description: User object
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "409":
+          description: Email already registered
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "502":
+          description: Bad Gateway
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Register a new user
+      tags:
+      - Authentication
   /proteng-user-mgmt/auth/resetpassword/{resetToken}:
     patch:
       consumes:
@@ -1651,35 +1802,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Retrieve all users
-      tags:
-      - User management
-    post:
-      consumes:
-      - application/json
-      description: Creates a new user with the provided details
-      parameters:
-      - description: User object
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/models.UserInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      summary: Create a new user
       tags:
       - User management
   /proteng-user-mgmt/users/{id}:
