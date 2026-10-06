@@ -652,6 +652,177 @@ const docTemplate = `{
                 }
             }
         },
+        "/proteng-conductor/mutations/experimental-results": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve the wet-lab results of the current user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Experimental Results"
+                ],
+                "summary": "Get all experimental results",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by job ID",
+                        "name": "job_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by mutation ID",
+                        "name": "mutation_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-conductor/mutations/experimental-results/by-mutation-result/{mutationResultId}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Save the wet-lab result of a mutation result, replacing any existing one",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Experimental Results"
+                ],
+                "summary": "Create or overwrite an experimental result",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "MutationResult ID",
+                        "name": "mutationResultId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "ExperimentalResult object",
+                        "name": "experimentalResult",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ExperimentalResultInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Clear the wet-lab result of a mutation result",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Experimental Results"
+                ],
+                "summary": "Delete an experimental result",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "MutationResult ID",
+                        "name": "mutationResultId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/proteng-conductor/mutations/histograms": {
             "get": {
                 "security": [
@@ -1098,42 +1269,36 @@ const docTemplate = `{
                     },
                     {
                         "type": "number",
-                        "format": "float64",
                         "description": "Filter by percentIdentityFrom",
                         "name": "percentIdentityFrom",
                         "in": "query"
                     },
                     {
                         "type": "number",
-                        "format": "float64",
                         "description": "Filter by percentIdentityTo",
                         "name": "percentIdentityTo",
                         "in": "query"
                     },
                     {
                         "type": "number",
-                        "format": "float64",
                         "description": "Filter by eValuesFrom",
                         "name": "eValuesFrom",
                         "in": "query"
                     },
                     {
                         "type": "number",
-                        "format": "float64",
                         "description": "Filter by eValuesTo",
                         "name": "eValuesTo",
                         "in": "query"
                     },
                     {
                         "type": "number",
-                        "format": "float64",
                         "description": "Filter by queryCoverFrom",
                         "name": "queryCoverFrom",
                         "in": "query"
                     },
                     {
                         "type": "number",
-                        "format": "float64",
                         "description": "Filter by queryCoverTo",
                         "name": "queryCoverTo",
                         "in": "query"
@@ -2566,6 +2731,20 @@ const docTemplate = `{
                 },
                 "query_result": {
                     "$ref": "#/definitions/models.CopyQueryResultInput"
+                }
+            }
+        },
+        "models.ExperimentalResultInput": {
+            "type": "object",
+            "properties": {
+                "actual_assay_score": {
+                    "type": "number"
+                },
+                "measured_at": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
                 }
             }
         },
