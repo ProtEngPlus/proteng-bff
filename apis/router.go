@@ -58,6 +58,9 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.GET("/mutations/:id/download", middleware.Authenticate(), middleware.Authorize("user"), DownloadMutationResults)
 	conductorRouter.GET("/mutations/results", middleware.Authenticate(), middleware.Authorize("user"), GetAllMutationResults)
 	conductorRouter.PUT("/mutations/results/:resultId", middleware.Authenticate(), middleware.Authorize("user"), UpdateMutationResult)
+	conductorRouter.GET("/mutations/experimental-results", middleware.Authenticate(), middleware.Authorize("user"), GetAllExperimentalResults)
+	conductorRouter.PUT("/mutations/experimental-results/by-mutation-result/:mutationResultId", middleware.Authenticate(), middleware.Authorize("user"), UpsertExperimentalResult)
+	conductorRouter.DELETE("/mutations/experimental-results/by-mutation-result/:mutationResultId", middleware.Authenticate(), middleware.Authorize("user"), DeleteExperimentalResult)
 
 	conductorRouter.GET("/artifact/:bucketName/:objectName", middleware.Authenticate(), middleware.Authorize("user"), DownloadArtifact)
 
