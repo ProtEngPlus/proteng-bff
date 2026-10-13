@@ -10,8 +10,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 
 	"github.com/protengplus/proteng-bff/configs"
+	"github.com/protengplus/proteng-bff/internal/logger"
 	"github.com/protengplus/proteng-bff/models"
 	"github.com/protengplus/proteng-bff/utils/apiutil"
 )
@@ -103,16 +105,19 @@ func ForwardIssuingSession(url string) gin.HandlerFunc {
 	}
 }
 
-func forwardRefresh(c *gin.Context, url string) {
+func refreshTokenBody(c *gin.Context) ([]byte, error) {
 	refreshToken, err := c.Cookie(refreshTokenCookie)
 	if err != nil || refreshToken == "" {
-		clearAuthCookies(c)
-		apiutil.ApiResponseUnauthorized(c, errors.New("missing refresh token"), "error: session expired")
-		return
+		return nil, errors.New("missing refresh token")
 	}
-	body, err := json.Marshal(map[string]string{"refresh_token": refreshToken})
+	return json.Marshal(map[string]string{"refresh_token": refreshToken})
+}
+
+func forwardRefresh(c *gin.Context, url string) {
+	body, err := refreshTokenBody(c)
 	if err != nil {
-		apiutil.ApiResponseInternalServerError(c, err)
+		clearAuthCookies(c)
+		apiutil.ApiResponseUnauthorized(c, err, "error: session expired")
 		return
 	}
 	status, out, err := callUserMgmt(c, http.MethodPost, url, body)
@@ -129,4 +134,19 @@ func forwardRefresh(c *gin.Context, url string) {
 		clearAuthCookies(c)
 	}
 	c.JSON(status, out)
+}
+
+func revokeRefreshToken(c *gin.Context, url string) {
+	body, err := refreshTokenBody(c)
+	if err != nil {
+		return
+	}
+	status, _, err := callUserMgmt(c, http.MethodPost, url, body)
+	if err != nil {
+		logger.Zap.Warn("failed to revoke refresh token on logout", zap.Error(err))
+		return
+	}
+	if status != http.StatusOK {
+		logger.Zap.Warn("failed to revoke refresh token on logout", zap.Int("status", status))
+	}
 }

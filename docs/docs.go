@@ -1993,7 +1993,7 @@ const docTemplate = `{
         },
         "/proteng-user-mgmt/auth/logout": {
             "post": {
-                "description": "Clears the auth cookies",
+                "description": "Revokes the refresh token and clears the auth cookies",
                 "produces": [
                     "application/json"
                 ],

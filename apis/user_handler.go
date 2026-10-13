@@ -127,12 +127,14 @@ func RefreshSession(c *gin.Context) {
 
 // Logout ends the browser session
 // @Summary Log out
-// @Description Clears the auth cookies
+// @Description Revokes the refresh token and clears the auth cookies
 // @Tags Authentication
 // @Produce json
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
 // @Router /proteng-user-mgmt/auth/logout [post]
 func Logout(c *gin.Context) {
+	usermgmtUrl := configs.Config.UserMgmtUrl
+	revokeRefreshToken(c, usermgmtUrl+"/auth/logout")
 	clearAuthCookies(c)
 	apiutil.ApiResponseOk(c, nil, "Logged out")
 }

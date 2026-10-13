@@ -4,12 +4,19 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
 	"github.com/protengplus/proteng-bff/configs"
+	"github.com/protengplus/proteng-bff/internal/logger"
 )
+
+func TestMain(m *testing.M) {
+	logger.InitZap()
+	os.Exit(m.Run())
+}
 
 func fakeUserMgmt(t *testing.T, status int, body string, got *map[string]string) string {
 	t.Helper()
@@ -100,25 +107,52 @@ func TestLogout(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	configs.Config.CookiePathPrefix = "/api"
 
-	router := gin.New()
-	router.POST("/logout", Logout)
-	req := httptest.NewRequest(http.MethodPost, "/logout", nil)
-	req.AddCookie(&http.Cookie{Name: accessTokenCookie, Value: "jwt-abc"})
-	w := httptest.NewRecorder()
-	router.ServeHTTP(w, req)
+	cases := []struct {
+		name          string
+		cookie        string
+		status        int
+		down          bool
+		wantForwarded bool
+	}{
+		{"revokes the refresh token upstream", "r-abc", http.StatusOK, false, true},
+		{"upstream error still logs out", "r-abc", http.StatusInternalServerError, false, true},
+		{"upstream down still logs out", "r-abc", http.StatusOK, true, false},
+		{"no refresh cookie skips upstream", "", http.StatusOK, false, false},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := map[string]string{}
+			fakeUserMgmt(t, tc.status, `{"code":200}`, &got)
+			if tc.down {
+				configs.Config.UserMgmtUrl = "http://127.0.0.1:0"
+			}
+			router := gin.New()
+			router.POST("/logout", Logout)
+			req := httptest.NewRequest(http.MethodPost, "/logout", nil)
+			req.AddCookie(&http.Cookie{Name: accessTokenCookie, Value: "jwt-abc"})
+			if tc.cookie != "" {
+				req.AddCookie(&http.Cookie{Name: refreshTokenCookie, Value: tc.cookie})
+			}
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
 
-	if w.Code != http.StatusOK {
-		t.Fatalf("status = %d, want %d", w.Code, http.StatusOK)
-	}
-	wantPaths := map[string]string{
-		accessTokenCookie:  "/api/",
-		refreshTokenCookie: "/api/proteng-user-mgmt/auth",
-	}
-	for name, path := range wantPaths {
-		cookie := findCookie(w.Result().Cookies(), name)
-		if cookie == nil || cookie.MaxAge >= 0 || cookie.Value != "" || cookie.Path != path {
-			t.Errorf("%s not cleared: %+v", name, cookie)
-		}
+			if w.Code != http.StatusOK {
+				t.Fatalf("status = %d, want %d", w.Code, http.StatusOK)
+			}
+			if forwarded := got["refresh_token"] == "r-abc"; forwarded != tc.wantForwarded {
+				t.Errorf("forwarded = %v, want %v", forwarded, tc.wantForwarded)
+			}
+			wantPaths := map[string]string{
+				accessTokenCookie:  "/api/",
+				refreshTokenCookie: "/api/proteng-user-mgmt/auth",
+			}
+			for name, path := range wantPaths {
+				cookie := findCookie(w.Result().Cookies(), name)
+				if cookie == nil || cookie.MaxAge >= 0 || cookie.Value != "" || cookie.Path != path {
+					t.Errorf("%s not cleared: %+v", name, cookie)
+				}
+			}
+		})
 	}
 }
 
