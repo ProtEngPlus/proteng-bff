@@ -106,7 +106,7 @@ func DeleteUser(c *gin.Context) {
 // @Router /proteng-user-mgmt/auth/login [post]
 func SignInUser(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
-	Forward(usermgmtUrl + "/auth/login")(c)
+	ForwardIssuingSession(usermgmtUrl + "/auth/login")(c)
 }
 
 // @Summary Get current user
@@ -246,5 +246,5 @@ func SendVerification(c *gin.Context) {
 func VerifyEmail(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	verificationToken := c.Param("verificationToken")
-	Forward(usermgmtUrl + "/auth/verifyemail/" + verificationToken)(c)
+	ForwardIssuingSession(usermgmtUrl + "/auth/verifyemail/" + verificationToken)(c)
 }
