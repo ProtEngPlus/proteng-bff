@@ -45,7 +45,7 @@ func TestForwardIssuingSession(t *testing.T) {
 		body       string
 		wantCookie bool
 	}{
-		{"success sets cookie and hides refresh token", http.StatusOK, `{"code":200,"data":{"id":"u1","access_token":"jwt-abc","refresh_token":"r-xyz"}}`, true},
+		{"success sets cookie and hides tokens", http.StatusOK, `{"code":200,"data":{"id":"u1","access_token":"jwt-abc","refresh_token":"r-xyz"}}`, true},
 		{"failure sets no cookie", http.StatusBadRequest, `{"code":400,"error":"invalid email or password"}`, false},
 	}
 	for _, tc := range cases {
@@ -75,8 +75,10 @@ func TestForwardIssuingSession(t *testing.T) {
 			if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil {
 				t.Fatalf("decode body: %v", err)
 			}
-			if _, ok := body.Data["refresh_token"]; ok {
-				t.Fatalf("refresh_token leaked: %s", w.Body.String())
+			for _, field := range []string{"access_token", "refresh_token"} {
+				if _, ok := body.Data[field]; ok {
+					t.Fatalf("%s leaked: %s", field, w.Body.String())
+				}
 			}
 			if body.Data["id"] != "u1" {
 				t.Fatalf("user data lost: %s", w.Body.String())
