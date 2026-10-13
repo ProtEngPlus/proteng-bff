@@ -2002,6 +2002,44 @@
                 }
             }
         },
+        "/proteng-user-mgmt/auth/refresh": {
+            "post": {
+                "description": "Exchanges the refresh token cookie for new access and refresh token cookies",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Refresh session",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "401": {
+                        "description": "Session expired",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "409": {
+                        "description": "Session already refreshed by another request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/proteng-user-mgmt/auth/register": {
             "post": {
                 "description": "Creates a new user and sends a verification email in a single call",

@@ -3,6 +3,7 @@ package apis
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -100,4 +101,32 @@ func ForwardIssuingSession(url string) gin.HandlerFunc {
 		}
 		c.JSON(status, out)
 	}
+}
+
+func forwardRefresh(c *gin.Context, url string) {
+	refreshToken, err := c.Cookie(refreshTokenCookie)
+	if err != nil || refreshToken == "" {
+		clearAuthCookies(c)
+		apiutil.ApiResponseUnauthorized(c, errors.New("missing refresh token"), "error: session expired")
+		return
+	}
+	body, err := json.Marshal(map[string]string{"refresh_token": refreshToken})
+	if err != nil {
+		apiutil.ApiResponseInternalServerError(c, err)
+		return
+	}
+	status, out, err := callUserMgmt(c, http.MethodPost, url, body)
+	if err != nil {
+		apiutil.ApiResponseInternalServerError(c, err)
+		return
+	}
+	switch status {
+	case http.StatusOK:
+		if out.Data != nil {
+			moveTokensToCookies(c, out.Data)
+		}
+	case http.StatusUnauthorized:
+		clearAuthCookies(c)
+	}
+	c.JSON(status, out)
 }

@@ -121,3 +121,68 @@ func TestLogout(t *testing.T) {
 		}
 	}
 }
+
+func TestRefreshSession(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	configs.Config.CookieSecure = true
+	configs.Config.CookiePathPrefix = "/api"
+
+	cases := []struct {
+		name          string
+		cookie        string
+		status        int
+		body          string
+		want          int
+		wantSet       bool
+		wantCleared   bool
+		wantForwarded bool
+	}{
+		{"success sets new token cookies", "r-old", http.StatusOK, `{"code":200,"data":{"access_token":"jwt-new","refresh_token":"r-new"}}`, http.StatusOK, true, false, true},
+		{"expired session clears cookies", "r-old", http.StatusUnauthorized, `{"code":401,"error":"refresh token is invalid or expired"}`, http.StatusUnauthorized, false, true, true},
+		{"concurrent refresh keeps cookies", "r-old", http.StatusConflict, `{"code":409,"error":"refresh token was already used"}`, http.StatusConflict, false, false, true},
+		{"missing cookie is rejected without calling user-mgmt", "", http.StatusOK, `{}`, http.StatusUnauthorized, false, true, false},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := map[string]string{}
+			fakeUserMgmt(t, tc.status, tc.body, &got)
+			router := gin.New()
+			router.POST("/refresh", RefreshSession)
+			req := httptest.NewRequest(http.MethodPost, "/refresh", nil)
+			if tc.cookie != "" {
+				req.AddCookie(&http.Cookie{Name: refreshTokenCookie, Value: tc.cookie})
+			}
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
+
+			if w.Code != tc.want {
+				t.Fatalf("status = %d, want %d", w.Code, tc.want)
+			}
+			if forwarded := got["refresh_token"] == tc.cookie && tc.cookie != ""; forwarded != tc.wantForwarded {
+				t.Errorf("forwarded = %v, want %v (got %v)", forwarded, tc.wantForwarded, got)
+			}
+
+			cookies := w.Result().Cookies()
+			switch {
+			case tc.wantSet:
+				access, refresh := findCookie(cookies, accessTokenCookie), findCookie(cookies, refreshTokenCookie)
+				if access == nil || access.Value != "jwt-new" || refresh == nil || refresh.Value != "r-new" || refresh.Path != "/api/proteng-user-mgmt/auth" {
+					t.Fatalf("cookies not rotated: %+v", cookies)
+				}
+				if strings.Contains(w.Body.String(), "jwt-new") || strings.Contains(w.Body.String(), "r-new") {
+					t.Fatalf("token leaked: %s", w.Body.String())
+				}
+			case tc.wantCleared:
+				for _, name := range []string{accessTokenCookie, refreshTokenCookie} {
+					if cookie := findCookie(cookies, name); cookie == nil || cookie.MaxAge >= 0 {
+						t.Errorf("%s not cleared: %+v", name, cookie)
+					}
+				}
+			default:
+				if len(cookies) != 0 {
+					t.Fatalf("unexpected cookies %+v", cookies)
+				}
+			}
+		})
+	}
+}

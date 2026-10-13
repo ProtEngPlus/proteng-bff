@@ -110,6 +110,21 @@ func SignInUser(c *gin.Context) {
 	ForwardIssuingSession(usermgmtUrl + "/auth/login")(c)
 }
 
+// RefreshSession exchanges the refresh token cookie for new token cookies
+// @Summary Refresh session
+// @Description Exchanges the refresh token cookie for new access and refresh token cookies
+// @Tags Authentication
+// @Produce json
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 401 {object} models.HttpResponseError "Session expired"
+// @Failure 409 {object} models.HttpResponseError "Session already refreshed by another request"
+// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
+// @Router /proteng-user-mgmt/auth/refresh [post]
+func RefreshSession(c *gin.Context) {
+	usermgmtUrl := configs.Config.UserMgmtUrl
+	forwardRefresh(c, usermgmtUrl+"/auth/refresh")
+}
+
 // Logout ends the browser session
 // @Summary Log out
 // @Description Clears the auth cookies

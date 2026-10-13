@@ -1570,6 +1570,32 @@ paths:
       summary: Log out
       tags:
       - Authentication
+  /proteng-user-mgmt/auth/refresh:
+    post:
+      description: Exchanges the refresh token cookie for new access and refresh token
+        cookies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Session expired
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "409":
+          description: Session already refreshed by another request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Refresh session
+      tags:
+      - Authentication
   /proteng-user-mgmt/auth/register:
     post:
       consumes:
