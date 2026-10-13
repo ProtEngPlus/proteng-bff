@@ -39,20 +39,22 @@ func GetUserByID(c *gin.Context) {
 	Forward(usermgmtUrl + "/users/" + c.Param("id"))(c)
 }
 
-// CreateUser creates a new user
-// @Summary Create a new user
-// @Description Creates a new user with the provided details
-// @Tags User management
+// RegisterUser registers a new user and sends the verification email
+// @Summary Register a new user
+// @Description Creates a new user and sends a verification email in a single call
+// @Tags Authentication
 // @Accept json
 // @Produce json
 // @Param user body models.UserInput true "User object"
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
 // @Failure 400 {object} models.HttpResponseError "Bad request"
+// @Failure 409 {object} models.HttpResponseError "Email already registered"
+// @Failure 502 {object} models.HttpResponseError "Bad Gateway"
 // @Failure 500 {object} models.HttpResponseError "Internal Server Error"
-// @Router /proteng-user-mgmt/users [post]
-func CreateUser(c *gin.Context) {
+// @Router /proteng-user-mgmt/auth/register [post]
+func RegisterUser(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
-	Forward(usermgmtUrl + "/users")(c)
+	Forward(usermgmtUrl + "/auth/register")(c)
 }
 
 // UpdateUser updates an existing user
