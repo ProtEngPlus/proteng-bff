@@ -110,14 +110,31 @@ func SignInUser(c *gin.Context) {
 	ForwardIssuingSession(usermgmtUrl + "/auth/login")(c)
 }
 
+// RefreshSession exchanges the refresh token cookie for new token cookies
+// @Summary Refresh session
+// @Description Exchanges the refresh token cookie for new access and refresh token cookies
+// @Tags Authentication
+// @Produce json
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 401 {object} models.HttpResponseError "Session expired"
+// @Failure 409 {object} models.HttpResponseError "Session already refreshed by another request"
+// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
+// @Router /proteng-user-mgmt/auth/refresh [post]
+func RefreshSession(c *gin.Context) {
+	usermgmtUrl := configs.Config.UserMgmtUrl
+	forwardRefresh(c, usermgmtUrl+"/auth/refresh")
+}
+
 // Logout ends the browser session
 // @Summary Log out
-// @Description Clears the auth cookies
+// @Description Revokes the refresh token and clears the auth cookies
 // @Tags Authentication
 // @Produce json
 // @Success 200 {object} models.HttpResponseOK "Successful operation"
 // @Router /proteng-user-mgmt/auth/logout [post]
 func Logout(c *gin.Context) {
+	usermgmtUrl := configs.Config.UserMgmtUrl
+	revokeRefreshToken(c, usermgmtUrl+"/auth/logout")
 	clearAuthCookies(c)
 	apiutil.ApiResponseOk(c, nil, "Logged out")
 }
@@ -193,7 +210,7 @@ func ForgotPassword(c *gin.Context) {
 
 // ResetPassword resets the password using the provided reset token
 // @Summary Reset password
-// @Description Resets the password using the provided reset token
+// @Description Resets the password using the provided reset token and signs out every session
 // @Tags Authentication
 // @Accept json
 // @Produce json
@@ -206,12 +223,12 @@ func ForgotPassword(c *gin.Context) {
 func ResetPassword(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	resetToken := c.Param("resetToken")
-	Forward(usermgmtUrl + "/auth/resetpassword/" + resetToken)(c)
+	ForwardEndingSession(usermgmtUrl + "/auth/resetpassword/" + resetToken)(c)
 }
 
 // ChangePassword changes the password while logged in
 // @Summary change password
-// @Description Changes the password while logged in
+// @Description Changes the password while logged in and signs out every session
 // @Tags Authentication
 // @Accept json
 // @Produce json
@@ -224,7 +241,7 @@ func ResetPassword(c *gin.Context) {
 func ChangePassword(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	userID := c.GetString("userId")
-	Forward(usermgmtUrl + "/auth/changepassword/" + userID)(c)
+	ForwardEndingSession(usermgmtUrl + "/auth/changepassword/" + userID)(c)
 }
 
 // SendVerification initiates the email verification process by sending a verification email to the user

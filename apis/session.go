@@ -3,14 +3,17 @@ package apis
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 
 	"github.com/protengplus/proteng-bff/configs"
+	"github.com/protengplus/proteng-bff/internal/logger"
 	"github.com/protengplus/proteng-bff/models"
 	"github.com/protengplus/proteng-bff/utils/apiutil"
 )
@@ -53,6 +56,17 @@ func clearAuthCookies(c *gin.Context) {
 	clearAuthCookie(c, refreshTokenCookie, refreshCookiePath)
 }
 
+func moveTokensToCookies(c *gin.Context, data map[string]interface{}) {
+	if token, ok := data["access_token"].(string); ok && token != "" {
+		setAuthCookie(c, accessTokenCookie, token, accessCookiePath)
+	}
+	if token, ok := data["refresh_token"].(string); ok && token != "" {
+		setAuthCookie(c, refreshTokenCookie, token, refreshCookiePath)
+	}
+	delete(data, "access_token")
+	delete(data, "refresh_token")
+}
+
 func callUserMgmt(c *gin.Context, method, url string, body []byte) (int, sessionResponse, error) {
 	var out sessionResponse
 	req, err := http.NewRequestWithContext(c.Request.Context(), method, url, bytes.NewReader(body))
@@ -85,12 +99,73 @@ func ForwardIssuingSession(url string) gin.HandlerFunc {
 			return
 		}
 		if status == http.StatusOK && out.Data != nil {
-			if token, ok := out.Data["access_token"].(string); ok && token != "" {
-				setAuthCookie(c, accessTokenCookie, token, accessCookiePath)
-			}
-			delete(out.Data, "access_token")
-			delete(out.Data, "refresh_token")
+			moveTokensToCookies(c, out.Data)
 		}
 		c.JSON(status, out)
+	}
+}
+
+func ForwardEndingSession(url string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		body, err := io.ReadAll(c.Request.Body)
+		if err != nil {
+			apiutil.ApiResponseErrorBadRequest(c, err)
+			return
+		}
+		status, out, err := callUserMgmt(c, c.Request.Method, url, body)
+		if err != nil {
+			apiutil.ApiResponseInternalServerError(c, err)
+			return
+		}
+		if status == http.StatusOK {
+			clearAuthCookies(c)
+		}
+		c.JSON(status, out)
+	}
+}
+
+func refreshTokenBody(c *gin.Context) ([]byte, error) {
+	refreshToken, err := c.Cookie(refreshTokenCookie)
+	if err != nil || refreshToken == "" {
+		return nil, errors.New("missing refresh token")
+	}
+	return json.Marshal(map[string]string{"refresh_token": refreshToken})
+}
+
+func forwardRefresh(c *gin.Context, url string) {
+	body, err := refreshTokenBody(c)
+	if err != nil {
+		clearAuthCookies(c)
+		apiutil.ApiResponseUnauthorized(c, err, "error: session expired")
+		return
+	}
+	status, out, err := callUserMgmt(c, http.MethodPost, url, body)
+	if err != nil {
+		apiutil.ApiResponseInternalServerError(c, err)
+		return
+	}
+	switch status {
+	case http.StatusOK:
+		if out.Data != nil {
+			moveTokensToCookies(c, out.Data)
+		}
+	case http.StatusUnauthorized:
+		clearAuthCookies(c)
+	}
+	c.JSON(status, out)
+}
+
+func revokeRefreshToken(c *gin.Context, url string) {
+	body, err := refreshTokenBody(c)
+	if err != nil {
+		return
+	}
+	status, _, err := callUserMgmt(c, http.MethodPost, url, body)
+	if err != nil {
+		logger.Zap.Warn("failed to revoke refresh token on logout", zap.Error(err))
+		return
+	}
+	if status != http.StatusOK {
+		logger.Zap.Warn("failed to revoke refresh token on logout", zap.Int("status", status))
 	}
 }
