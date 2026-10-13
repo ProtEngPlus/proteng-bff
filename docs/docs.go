@@ -1809,7 +1809,7 @@ const docTemplate = `{
         },
         "/proteng-user-mgmt/auth/changepassword": {
             "patch": {
-                "description": "Changes the password while logged in",
+                "description": "Changes the password while logged in and signs out every session",
                 "consumes": [
                     "application/json"
                 ],
@@ -2109,7 +2109,7 @@ const docTemplate = `{
         },
         "/proteng-user-mgmt/auth/resetpassword/{resetToken}": {
             "patch": {
-                "description": "Resets the password using the provided reset token",
+                "description": "Resets the password using the provided reset token and signs out every session",
                 "consumes": [
                     "application/json"
                 ],

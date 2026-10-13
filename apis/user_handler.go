@@ -210,7 +210,7 @@ func ForgotPassword(c *gin.Context) {
 
 // ResetPassword resets the password using the provided reset token
 // @Summary Reset password
-// @Description Resets the password using the provided reset token
+// @Description Resets the password using the provided reset token and signs out every session
 // @Tags Authentication
 // @Accept json
 // @Produce json
@@ -223,12 +223,12 @@ func ForgotPassword(c *gin.Context) {
 func ResetPassword(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	resetToken := c.Param("resetToken")
-	Forward(usermgmtUrl + "/auth/resetpassword/" + resetToken)(c)
+	ForwardEndingSession(usermgmtUrl + "/auth/resetpassword/" + resetToken)(c)
 }
 
 // ChangePassword changes the password while logged in
 // @Summary change password
-// @Description Changes the password while logged in
+// @Description Changes the password while logged in and signs out every session
 // @Tags Authentication
 // @Accept json
 // @Produce json
@@ -241,7 +241,7 @@ func ResetPassword(c *gin.Context) {
 func ChangePassword(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	userID := c.GetString("userId")
-	Forward(usermgmtUrl + "/auth/changepassword/" + userID)(c)
+	ForwardEndingSession(usermgmtUrl + "/auth/changepassword/" + userID)(c)
 }
 
 // SendVerification initiates the email verification process by sending a verification email to the user

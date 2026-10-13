@@ -220,3 +220,47 @@ func TestRefreshSession(t *testing.T) {
 		})
 	}
 }
+
+func TestForwardEndingSession(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	configs.Config.CookiePathPrefix = "/api"
+
+	cases := []struct {
+		name        string
+		status      int
+		body        string
+		wantCleared bool
+	}{
+		{"success clears cookies", http.StatusOK, `{"code":200,"data":null,"message":"Password data updated successfully"}`, true},
+		{"failure keeps cookies", http.StatusBadRequest, `{"code":400,"error":"invalid password"}`, false},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := map[string]string{}
+			url := fakeUserMgmt(t, tc.status, tc.body, &got)
+			router := gin.New()
+			router.PATCH("/changepassword", ForwardEndingSession(url))
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, httptest.NewRequest(http.MethodPatch, "/changepassword", strings.NewReader(`{"current_password":"old","new_password":"new"}`)))
+
+			if w.Code != tc.status {
+				t.Fatalf("status = %d, want %d", w.Code, tc.status)
+			}
+			if got["new_password"] != "new" {
+				t.Errorf("body not forwarded: %v", got)
+			}
+			cookies := w.Result().Cookies()
+			if !tc.wantCleared {
+				if len(cookies) != 0 {
+					t.Fatalf("unexpected cookies %+v", cookies)
+				}
+				return
+			}
+			for _, name := range []string{accessTokenCookie, refreshTokenCookie} {
+				if cookie := findCookie(cookies, name); cookie == nil || cookie.MaxAge >= 0 {
+					t.Errorf("%s not cleared: %+v", name, cookie)
+				}
+			}
+		})
+	}
+}

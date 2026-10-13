@@ -1440,7 +1440,7 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Changes the password while logged in
+      description: Changes the password while logged in and signs out every session
       parameters:
       - description: User credentials
         in: body
@@ -1638,7 +1638,8 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Resets the password using the provided reset token
+      description: Resets the password using the provided reset token and signs out
+        every session
       parameters:
       - description: Reset Token
         in: path

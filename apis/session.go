@@ -105,6 +105,25 @@ func ForwardIssuingSession(url string) gin.HandlerFunc {
 	}
 }
 
+func ForwardEndingSession(url string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		body, err := io.ReadAll(c.Request.Body)
+		if err != nil {
+			apiutil.ApiResponseErrorBadRequest(c, err)
+			return
+		}
+		status, out, err := callUserMgmt(c, c.Request.Method, url, body)
+		if err != nil {
+			apiutil.ApiResponseInternalServerError(c, err)
+			return
+		}
+		if status == http.StatusOK {
+			clearAuthCookies(c)
+		}
+		c.JSON(status, out)
+	}
+}
+
 func refreshTokenBody(c *gin.Context) ([]byte, error) {
 	refreshToken, err := c.Cookie(refreshTokenCookie)
 	if err != nil || refreshToken == "" {
