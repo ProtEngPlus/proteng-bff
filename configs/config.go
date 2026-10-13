@@ -20,6 +20,9 @@ type config struct {
 	ConductorUrl string   `envconfig:"CONDUCTOR_URL" default:"http://localhost:8081"`
 	FrontendUrls []string `envconfig:"FRONTEND_URLS" default:"http://localhost:5173"`
 
+	CookieSecure     bool   `envconfig:"COOKIE_SECURE" default:"true"`
+	CookiePathPrefix string `envconfig:"COOKIE_PATH_PREFIX" default:""`
+
 	AccessTokenPublicKey string `envconfig:"ACCESS_TOKEN_PUBLIC_KEY" default:""`
 }
 
