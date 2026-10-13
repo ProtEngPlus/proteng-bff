@@ -53,6 +53,17 @@ func clearAuthCookies(c *gin.Context) {
 	clearAuthCookie(c, refreshTokenCookie, refreshCookiePath)
 }
 
+func moveTokensToCookies(c *gin.Context, data map[string]interface{}) {
+	if token, ok := data["access_token"].(string); ok && token != "" {
+		setAuthCookie(c, accessTokenCookie, token, accessCookiePath)
+	}
+	if token, ok := data["refresh_token"].(string); ok && token != "" {
+		setAuthCookie(c, refreshTokenCookie, token, refreshCookiePath)
+	}
+	delete(data, "access_token")
+	delete(data, "refresh_token")
+}
+
 func callUserMgmt(c *gin.Context, method, url string, body []byte) (int, sessionResponse, error) {
 	var out sessionResponse
 	req, err := http.NewRequestWithContext(c.Request.Context(), method, url, bytes.NewReader(body))
@@ -85,11 +96,7 @@ func ForwardIssuingSession(url string) gin.HandlerFunc {
 			return
 		}
 		if status == http.StatusOK && out.Data != nil {
-			if token, ok := out.Data["access_token"].(string); ok && token != "" {
-				setAuthCookie(c, accessTokenCookie, token, accessCookiePath)
-			}
-			delete(out.Data, "access_token")
-			delete(out.Data, "refresh_token")
+			moveTokensToCookies(c, out.Data)
 		}
 		c.JSON(status, out)
 	}

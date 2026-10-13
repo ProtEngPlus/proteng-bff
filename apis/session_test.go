@@ -45,8 +45,8 @@ func TestForwardIssuingSession(t *testing.T) {
 		body       string
 		wantCookie bool
 	}{
-		{"success sets cookie and hides tokens", http.StatusOK, `{"code":200,"data":{"id":"u1","access_token":"jwt-abc","refresh_token":"r-xyz"}}`, true},
-		{"failure sets no cookie", http.StatusBadRequest, `{"code":400,"error":"invalid email or password"}`, false},
+		{"success sets both cookies and hides tokens", http.StatusOK, `{"code":200,"data":{"id":"u1","access_token":"jwt-abc","refresh_token":"r-xyz"}}`, true},
+		{"failure sets no cookies", http.StatusBadRequest, `{"code":400,"error":"invalid email or password"}`, false},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -59,15 +59,24 @@ func TestForwardIssuingSession(t *testing.T) {
 			if w.Code != tc.status {
 				t.Fatalf("status = %d, want %d", w.Code, tc.status)
 			}
-			cookie := findCookie(w.Result().Cookies(), accessTokenCookie)
-			if !tc.wantCookie {
-				if cookie != nil {
-					t.Fatalf("unexpected cookie %+v", cookie)
-				}
-				return
+			wantCookies := []struct{ name, value, path string }{
+				{accessTokenCookie, "jwt-abc", "/api/"},
+				{refreshTokenCookie, "r-xyz", "/api/proteng-user-mgmt/auth"},
 			}
-			if cookie == nil || cookie.Value != "jwt-abc" || !cookie.HttpOnly || !cookie.Secure || cookie.SameSite != http.SameSiteLaxMode || cookie.Path != "/api/" {
-				t.Fatalf("unexpected cookie %+v", cookie)
+			for _, want := range wantCookies {
+				cookie := findCookie(w.Result().Cookies(), want.name)
+				if !tc.wantCookie {
+					if cookie != nil {
+						t.Fatalf("unexpected cookie %+v", cookie)
+					}
+					continue
+				}
+				if cookie == nil || cookie.Value != want.value || !cookie.HttpOnly || !cookie.Secure || cookie.SameSite != http.SameSiteLaxMode || cookie.Path != want.path || cookie.MaxAge != 0 {
+					t.Fatalf("unexpected %s cookie %+v", want.name, cookie)
+				}
+			}
+			if !tc.wantCookie {
+				return
 			}
 			var body struct {
 				Data map[string]interface{} `json:"data"`
