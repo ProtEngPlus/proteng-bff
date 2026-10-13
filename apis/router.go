@@ -21,6 +21,7 @@ func InitRouter(r *gin.Engine) {
 
 	userRouter.POST("/auth/register", RegisterUser)
 	userRouter.POST("/auth/login", SignInUser)
+	userRouter.POST("/auth/logout", Logout)
 	userRouter.POST("/auth/forgotpassword", ForgotPassword)
 	userRouter.PATCH("/auth/resetpassword/:resetToken", ResetPassword)
 	userRouter.PATCH("/auth/changepassword", middleware.Authenticate(), ChangePassword)

@@ -3,6 +3,7 @@ package apis
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/protengplus/proteng-bff/configs"
+	"github.com/protengplus/proteng-bff/utils/apiutil"
 )
 
 // GetAllUsers retrieves all users
@@ -107,6 +108,18 @@ func DeleteUser(c *gin.Context) {
 func SignInUser(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	ForwardIssuingSession(usermgmtUrl + "/auth/login")(c)
+}
+
+// Logout ends the browser session
+// @Summary Log out
+// @Description Clears the auth cookies
+// @Tags Authentication
+// @Produce json
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Router /proteng-user-mgmt/auth/logout [post]
+func Logout(c *gin.Context) {
+	clearAuthCookies(c)
+	apiutil.ApiResponseOk(c, nil, "Logged out")
 }
 
 // @Summary Get current user

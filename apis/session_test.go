@@ -84,3 +84,29 @@ func TestForwardIssuingSession(t *testing.T) {
 		})
 	}
 }
+
+func TestLogout(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	configs.Config.CookiePathPrefix = "/api"
+
+	router := gin.New()
+	router.POST("/logout", Logout)
+	req := httptest.NewRequest(http.MethodPost, "/logout", nil)
+	req.AddCookie(&http.Cookie{Name: accessTokenCookie, Value: "jwt-abc"})
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", w.Code, http.StatusOK)
+	}
+	wantPaths := map[string]string{
+		accessTokenCookie:  "/api/",
+		refreshTokenCookie: "/api/proteng-user-mgmt/auth",
+	}
+	for name, path := range wantPaths {
+		cookie := findCookie(w.Result().Cookies(), name)
+		if cookie == nil || cookie.MaxAge >= 0 || cookie.Value != "" || cookie.Path != path {
+			t.Errorf("%s not cleared: %+v", name, cookie)
+		}
+	}
+}
