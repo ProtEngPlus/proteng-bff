@@ -8,6 +8,15 @@ definitions:
       username:
         type: string
     type: object
+  models.AssayTypeInput:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
   models.ChangePasswordInput:
     properties:
       current_password:
@@ -23,6 +32,8 @@ definitions:
       artifact:
         additionalProperties: true
         type: object
+      assay_type_id:
+        type: string
       description:
         type: string
       input_protein:
@@ -159,6 +170,8 @@ definitions:
       artifact:
         additionalProperties: true
         type: object
+      assay_type_id:
+        type: string
       description:
         type: string
       input_protein:
@@ -167,6 +180,10 @@ definitions:
         type: boolean
       lab_result:
         $ref: '#/definitions/models.LabResult'
+      library_result_ids:
+        items:
+          type: string
+        type: array
       meta:
         items:
           type: string
@@ -185,6 +202,7 @@ definitions:
         minimum: 0
         type: integer
     required:
+    - assay_type_id
     - input_protein
     - name
     - options
@@ -197,6 +215,10 @@ definitions:
           type: number
         type: array
       sequences:
+        items:
+          type: string
+        type: array
+      sources:
         items:
           type: string
         type: array
@@ -336,6 +358,274 @@ paths:
       summary: Download Artifact
       tags:
       - Artifact
+  /proteng-conductor/assay-types:
+    get:
+      description: Retrieve the assay types of the current user with job and result
+        counts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all assay types
+      tags:
+      - Assay Types
+    post:
+      consumes:
+      - application/json
+      description: Create a reusable assay score type
+      parameters:
+      - description: Assay type object
+        in: body
+        name: assayType
+        required: true
+        schema:
+          $ref: '#/definitions/models.AssayTypeInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "409":
+          description: Name already exists
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create an assay type
+      tags:
+      - Assay Types
+  /proteng-conductor/assay-types/{id}:
+    delete:
+      description: Delete an assay type that no job or result uses
+      parameters:
+      - description: Assay type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "409":
+          description: Assay type is in use
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete an assay type
+      tags:
+      - Assay Types
+    get:
+      description: Retrieve one assay type of the current user
+      parameters:
+      - description: Assay type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get an assay type
+      tags:
+      - Assay Types
+    put:
+      consumes:
+      - application/json
+      description: Rename an assay type or change its description
+      parameters:
+      - description: Assay type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Assay type object
+        in: body
+        name: assayType
+        required: true
+        schema:
+          $ref: '#/definitions/models.AssayTypeInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "409":
+          description: Name already exists
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an assay type
+      tags:
+      - Assay Types
+  /proteng-conductor/assay-types/{id}/library:
+    get:
+      description: Deduplicated wet-lab results of one job for this assay type
+      parameters:
+      - description: Assay type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Job ID
+        in: query
+        name: job_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: List library results of a job
+      tags:
+      - Assay Types
+  /proteng-conductor/assay-types/{id}/library/export:
+    get:
+      description: Headerless sequence,score csv of all or the given library results
+      parameters:
+      - description: Assay type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Comma separated result IDs
+        in: query
+        name: ids
+        type: string
+      produces:
+      - text/csv
+      responses:
+        "200":
+          description: csv file
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Nothing to export
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Export the library as csv
+      tags:
+      - Assay Types
+  /proteng-conductor/assay-types/{id}/library/jobs:
+    get:
+      description: Jobs that have wet-lab results of this assay type, newest first
+      parameters:
+      - description: Assay type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Filter by job name
+        in: query
+        name: q
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: List library jobs
+      tags:
+      - Assay Types
   /proteng-conductor/jobs:
     get:
       description: Retrieve a list of all jobs
@@ -960,6 +1250,35 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Create or overwrite an experimental result
+      tags:
+      - Experimental Results
+  /proteng-conductor/mutations/experimental-results/export:
+    get:
+      description: Headerless sequence,score csv that the Upload Lab Input step accepts
+      parameters:
+      - description: Job ID
+        in: query
+        name: job_id
+        required: true
+        type: string
+      produces:
+      - text/csv
+      responses:
+        "200":
+          description: csv file
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Nothing to export
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Export a job's wet-lab results as csv
       tags:
       - Experimental Results
   /proteng-conductor/mutations/histograms:
