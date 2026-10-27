@@ -79,6 +79,425 @@
                 }
             }
         },
+        "/proteng-conductor/assay-types": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve the assay types of the current user with job and result counts",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assay Types"
+                ],
+                "summary": "Get all assay types",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Create a reusable assay score type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assay Types"
+                ],
+                "summary": "Create an assay type",
+                "parameters": [
+                    {
+                        "description": "Assay type object",
+                        "name": "assayType",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AssayTypeInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "409": {
+                        "description": "Name already exists",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-conductor/assay-types/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retrieve one assay type of the current user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assay Types"
+                ],
+                "summary": "Get an assay type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assay type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Rename an assay type or change its description",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assay Types"
+                ],
+                "summary": "Update an assay type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assay type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Assay type object",
+                        "name": "assayType",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AssayTypeInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "409": {
+                        "description": "Name already exists",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Delete an assay type that no job or result uses",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assay Types"
+                ],
+                "summary": "Delete an assay type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assay type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "409": {
+                        "description": "Assay type is in use",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-conductor/assay-types/{id}/library": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Deduplicated wet-lab results of one job for this assay type",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assay Types"
+                ],
+                "summary": "List library results of a job",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assay type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Job ID",
+                        "name": "job_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-conductor/assay-types/{id}/library/export": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Headerless sequence,score csv of all or the given library results",
+                "produces": [
+                    "text/csv"
+                ],
+                "tags": [
+                    "Assay Types"
+                ],
+                "summary": "Export the library as csv",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assay type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Comma separated result IDs",
+                        "name": "ids",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "csv file",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Nothing to export",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-conductor/assay-types/{id}/library/jobs": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Jobs that have wet-lab results of this assay type, newest first",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Assay Types"
+                ],
+                "summary": "List library jobs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Assay type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by job name",
+                        "name": "q",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/proteng-conductor/jobs": {
             "get": {
                 "security": [
@@ -807,6 +1226,52 @@
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-conductor/mutations/experimental-results/export": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Headerless sequence,score csv that the Upload Lab Input step accepts",
+                "produces": [
+                    "text/csv"
+                ],
+                "tags": [
+                    "Experimental Results"
+                ],
+                "summary": "Export a job's wet-lab results as csv",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Job ID",
+                        "name": "job_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "csv file",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "404": {
+                        "description": "Nothing to export",
                         "schema": {
                             "$ref": "#/definitions/models.HttpResponseError"
                         }
@@ -2558,6 +3023,20 @@
                 }
             }
         },
+        "models.AssayTypeInput": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ChangePasswordInput": {
             "type": "object",
             "required": [
@@ -2587,6 +3066,9 @@
                 "artifact": {
                     "type": "object",
                     "additionalProperties": true
+                },
+                "assay_type_id": {
+                    "type": "string"
                 },
                 "description": {
                     "type": "string"
@@ -2779,6 +3261,7 @@
         "models.JobInput": {
             "type": "object",
             "required": [
+                "assay_type_id",
                 "input_protein",
                 "name",
                 "options",
@@ -2788,6 +3271,9 @@
                 "artifact": {
                     "type": "object",
                     "additionalProperties": true
+                },
+                "assay_type_id": {
+                    "type": "string"
                 },
                 "description": {
                     "type": "string"
@@ -2800,6 +3286,12 @@
                 },
                 "lab_result": {
                     "$ref": "#/definitions/models.LabResult"
+                },
+                "library_result_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "meta": {
                     "type": "array",
@@ -2841,6 +3333,12 @@
                     }
                 },
                 "sequences": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "sources": {
                     "type": "array",
                     "items": {
                         "type": "string"

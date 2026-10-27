@@ -12,6 +12,8 @@ type JobInput struct {
 	Name             string                 `bson:"name" json:"name" validate:"required"`
 	StageId          int                    `bson:"stage_id" json:"stage_id" validate:"gte=0,lte=3"`
 	RefJobId         string                 `bson:"ref_job_id" json:"ref_job_id"`
+	AssayTypeId      string                 `bson:"assay_type_id" json:"assay_type_id" validate:"required"`
+	LibraryResultIds []string               `bson:"library_result_ids" json:"library_result_ids"`
 	LabResult        LabResult              `bson:"lab_result" json:"lab_result"`
 	Options          map[string]interface{} `bson:"options" json:"options" validate:"required"`
 	Artifacts        map[string]interface{} `bson:"artifact" json:"artifact"`
@@ -53,10 +55,12 @@ type LabResult struct {
 	Total     int       `bson:"total" json:"total" validate:"gte=0"`
 	Sequences []string  `bson:"sequences" json:"sequences" validate:"required"`
 	Scores    []float32 `bson:"scores" json:"scores" validate:"required"`
+	Sources   []string  `bson:"sources" json:"sources"`
 }
 
 type ConfigurationInput struct {
 	RefJobId         string                 `bson:"ref_job_id" json:"ref_job_id" validate:"required"`
+	AssayTypeId      string                 `bson:"assay_type_id" json:"assay_type_id"`
 	State            string                 `bson:"state" json:"state"`
 	StageId          int                    `bson:"stage_id" json:"stage_id" validate:"gte=0,lte=3"`
 	Name             string                 `bson:"name" json:"name" validate:"required"`
