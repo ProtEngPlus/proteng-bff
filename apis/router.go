@@ -62,6 +62,11 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.PUT("/mutations/experimental-results/by-mutation-result/:mutationResultId", middleware.Authenticate(), middleware.Authorize("user"), UpsertExperimentalResult)
 	conductorRouter.DELETE("/mutations/experimental-results/by-mutation-result/:mutationResultId", middleware.Authenticate(), middleware.Authorize("user"), DeleteExperimentalResult)
 
+	conductorRouter.GET("/evaluation-plugins", middleware.Authenticate(), middleware.Authorize("user"), GetEvaluationPlugins)
+	conductorRouter.GET("/jobs/:id/evaluations", middleware.Authenticate(), middleware.Authorize("user"), GetJobEvaluations)
+	conductorRouter.POST("/jobs/:id/evaluations", middleware.Authenticate(), middleware.Authorize("user"), RerunEvaluation)
+	conductorRouter.GET("/evaluations/:id", middleware.Authenticate(), middleware.Authorize("user"), GetEvaluation)
+
 	conductorRouter.GET("/artifact/:bucketName/:objectName", middleware.Authenticate(), middleware.Authorize("user"), DownloadArtifact)
 
 	conductorRouter.GET("/uniProt/:uniProtId", middleware.Authenticate(), middleware.Authorize("user"), GetProteinSequenceFromId)
