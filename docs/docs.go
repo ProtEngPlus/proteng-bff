@@ -1809,7 +1809,7 @@ const docTemplate = `{
         },
         "/proteng-user-mgmt/auth/changepassword": {
             "patch": {
-                "description": "Changes the password while logged in",
+                "description": "Changes the password while logged in and signs out every session",
                 "consumes": [
                     "application/json"
                 ],
@@ -1993,7 +1993,7 @@ const docTemplate = `{
         },
         "/proteng-user-mgmt/auth/logout": {
             "post": {
-                "description": "Clears the auth cookies",
+                "description": "Revokes the refresh token and clears the auth cookies",
                 "produces": [
                     "application/json"
                 ],
@@ -2006,6 +2006,44 @@ const docTemplate = `{
                         "description": "Successful operation",
                         "schema": {
                             "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-user-mgmt/auth/refresh": {
+            "post": {
+                "description": "Exchanges the refresh token cookie for new access and refresh token cookies",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Refresh session",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "401": {
+                        "description": "Session expired",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "409": {
+                        "description": "Session already refreshed by another request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
                         }
                     }
                 }
@@ -2071,7 +2109,7 @@ const docTemplate = `{
         },
         "/proteng-user-mgmt/auth/resetpassword/{resetToken}": {
             "patch": {
-                "description": "Resets the password using the provided reset token",
+                "description": "Resets the password using the provided reset token and signs out every session",
                 "consumes": [
                     "application/json"
                 ],
