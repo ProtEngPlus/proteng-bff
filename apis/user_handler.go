@@ -3,6 +3,7 @@ package apis
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/protengplus/proteng-bff/configs"
+	"github.com/protengplus/proteng-bff/utils/apiutil"
 )
 
 // GetAllUsers retrieves all users
@@ -106,7 +107,19 @@ func DeleteUser(c *gin.Context) {
 // @Router /proteng-user-mgmt/auth/login [post]
 func SignInUser(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
-	Forward(usermgmtUrl + "/auth/login")(c)
+	ForwardIssuingSession(usermgmtUrl + "/auth/login")(c)
+}
+
+// Logout ends the browser session
+// @Summary Log out
+// @Description Clears the auth cookies
+// @Tags Authentication
+// @Produce json
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Router /proteng-user-mgmt/auth/logout [post]
+func Logout(c *gin.Context) {
+	clearAuthCookies(c)
+	apiutil.ApiResponseOk(c, nil, "Logged out")
 }
 
 // @Summary Get current user
@@ -246,5 +259,5 @@ func SendVerification(c *gin.Context) {
 func VerifyEmail(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	verificationToken := c.Param("verificationToken")
-	Forward(usermgmtUrl + "/auth/verifyemail/" + verificationToken)(c)
+	ForwardIssuingSession(usermgmtUrl + "/auth/verifyemail/" + verificationToken)(c)
 }
