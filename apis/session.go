@@ -88,6 +88,7 @@ func ForwardIssuingSession(url string) gin.HandlerFunc {
 			if token, ok := out.Data["access_token"].(string); ok && token != "" {
 				setAuthCookie(c, accessTokenCookie, token, accessCookiePath)
 			}
+			delete(out.Data, "access_token")
 			delete(out.Data, "refresh_token")
 		}
 		c.JSON(status, out)
