@@ -1487,36 +1487,42 @@
                     },
                     {
                         "type": "number",
+                        "format": "float64",
                         "description": "Filter by percentIdentityFrom",
                         "name": "percentIdentityFrom",
                         "in": "query"
                     },
                     {
                         "type": "number",
+                        "format": "float64",
                         "description": "Filter by percentIdentityTo",
                         "name": "percentIdentityTo",
                         "in": "query"
                     },
                     {
                         "type": "number",
+                        "format": "float64",
                         "description": "Filter by eValuesFrom",
                         "name": "eValuesFrom",
                         "in": "query"
                     },
                     {
                         "type": "number",
+                        "format": "float64",
                         "description": "Filter by eValuesTo",
                         "name": "eValuesTo",
                         "in": "query"
                     },
                     {
                         "type": "number",
+                        "format": "float64",
                         "description": "Filter by queryCoverFrom",
                         "name": "queryCoverFrom",
                         "in": "query"
                     },
                     {
                         "type": "number",
+                        "format": "float64",
                         "description": "Filter by queryCoverTo",
                         "name": "queryCoverTo",
                         "in": "query"
@@ -2021,7 +2027,7 @@
         },
         "/proteng-user-mgmt/auth/changepassword": {
             "patch": {
-                "description": "Changes the password while logged in",
+                "description": "Changes the password while logged in and signs out every session",
                 "consumes": [
                     "application/json"
                 ],
@@ -2203,6 +2209,64 @@
                 }
             }
         },
+        "/proteng-user-mgmt/auth/logout": {
+            "post": {
+                "description": "Revokes the refresh token and clears the auth cookies",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Log out",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    }
+                }
+            }
+        },
+        "/proteng-user-mgmt/auth/refresh": {
+            "post": {
+                "description": "Exchanges the refresh token cookie for new access and refresh token cookies",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Refresh session",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseOK"
+                        }
+                    },
+                    "401": {
+                        "description": "Session expired",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "409": {
+                        "description": "Session already refreshed by another request",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.HttpResponseError"
+                        }
+                    }
+                }
+            }
+        },
         "/proteng-user-mgmt/auth/register": {
             "post": {
                 "description": "Creates a new user and sends a verification email in a single call",
@@ -2263,7 +2327,7 @@
         },
         "/proteng-user-mgmt/auth/resetpassword/{resetToken}": {
             "patch": {
-                "description": "Resets the password using the provided reset token",
+                "description": "Resets the password using the provided reset token and signs out every session",
                 "consumes": [
                     "application/json"
                 ],

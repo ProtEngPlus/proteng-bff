@@ -7,6 +7,7 @@ import (
 	"github.com/protengplus/proteng-bff/apis"
 	"github.com/protengplus/proteng-bff/configs"
 	"github.com/protengplus/proteng-bff/internal/logger"
+	"github.com/protengplus/proteng-bff/middleware"
 
 	"github.com/gin-contrib/cors"
 	ginzap "github.com/gin-contrib/zap"
@@ -46,8 +47,10 @@ func main() {
 	// Health Check Endpoint
 	r.GET("/healthz", HealthCheck)
 
-	// CORS
-	r.Use(CORSMiddleware())
+	// CORS and CSRF origin check
+	origins := append([]string{"http://localhost:5173", "http://localhost:3000"}, configs.Config.FrontendUrls...)
+	r.Use(CORSMiddleware(origins))
+	r.Use(middleware.RequireTrustedOrigin(origins))
 
 	// Logger
 	r.Use(ginzap.GinzapWithConfig(logger.Zap, &ginzap.Config{
@@ -74,9 +77,9 @@ func main() {
 	}
 }
 
-func CORSMiddleware() gin.HandlerFunc {
+func CORSMiddleware(allowedOrigins []string) gin.HandlerFunc {
 	return cors.New(cors.Config{
-		AllowOrigins:     append([]string{"http://localhost:5173", "http://localhost:3000"}, configs.Config.FrontendUrls...),
+		AllowOrigins:     allowedOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "Cache-Control", "X-Requested-With"},
 		ExposeHeaders:    []string{"Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization", "accept", "origin", "Cache-Control", "X-Requested-With"},
