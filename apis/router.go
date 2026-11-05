@@ -64,6 +64,17 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.PUT("/mutations/experimental-results/by-mutation-result/:mutationResultId", middleware.Authenticate(), middleware.Authorize("user"), UpsertExperimentalResult)
 	conductorRouter.DELETE("/mutations/experimental-results/by-mutation-result/:mutationResultId", middleware.Authenticate(), middleware.Authorize("user"), DeleteExperimentalResult)
 
+	conductorRouter.GET("/mutations/experimental-results/export", middleware.Authenticate(), middleware.Authorize("user"), ExportExperimentalResults)
+
+	conductorRouter.GET("/assay-types", middleware.Authenticate(), middleware.Authorize("user"), GetAllAssayTypes)
+	conductorRouter.POST("/assay-types", middleware.Authenticate(), middleware.Authorize("user"), CreateAssayType)
+	conductorRouter.GET("/assay-types/:id", middleware.Authenticate(), middleware.Authorize("user"), GetAssayType)
+	conductorRouter.PUT("/assay-types/:id", middleware.Authenticate(), middleware.Authorize("user"), UpdateAssayType)
+	conductorRouter.DELETE("/assay-types/:id", middleware.Authenticate(), middleware.Authorize("user"), DeleteAssayType)
+	conductorRouter.GET("/assay-types/:id/library/jobs", middleware.Authenticate(), middleware.Authorize("user"), GetLibraryJobs)
+	conductorRouter.GET("/assay-types/:id/library", middleware.Authenticate(), middleware.Authorize("user"), GetLibraryResults)
+	conductorRouter.GET("/assay-types/:id/library/export", middleware.Authenticate(), middleware.Authorize("user"), ExportLibrary)
+
 	conductorRouter.GET("/evaluation-plugins", middleware.Authenticate(), middleware.Authorize("user"), GetEvaluationPlugins)
 	conductorRouter.GET("/jobs/:id/evaluations", middleware.Authenticate(), middleware.Authorize("user"), GetJobEvaluations)
 	conductorRouter.POST("/jobs/:id/evaluations", middleware.Authenticate(), middleware.Authorize("user"), RerunEvaluation)
