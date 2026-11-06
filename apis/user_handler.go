@@ -226,6 +226,21 @@ func ResetPassword(c *gin.Context) {
 	ForwardEndingSession(usermgmtUrl + "/auth/resetpassword/" + resetToken)(c)
 }
 
+// CheckResetToken checks a reset token without using it
+// @Summary Check reset token
+// @Description Checks whether a reset token can still be used, without changing anything
+// @Tags Authentication
+// @Produce json
+// @Param resetToken path string true "Reset Token"
+// @Success 200 {object} models.HttpResponseOK "Token is valid"
+// @Failure 400 {object} models.HttpResponseError "Token is invalid or has expired"
+// @Router /proteng-user-mgmt/auth/resetpassword/{resetToken} [get]
+func CheckResetToken(c *gin.Context) {
+	usermgmtUrl := configs.Config.UserMgmtUrl
+	resetToken := c.Param("resetToken")
+	Forward(usermgmtUrl + "/auth/resetpassword/" + resetToken)(c)
+}
+
 // ChangePassword changes the password while logged in
 // @Summary change password
 // @Description Changes the password while logged in and signs out every session
