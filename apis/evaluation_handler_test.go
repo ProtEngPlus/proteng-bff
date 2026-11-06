@@ -67,6 +67,21 @@ func TestEvaluationHandlers(t *testing.T) {
 		}
 	})
 
+	t.Run("ids stay inside the forwarded path", func(tt *testing.T) {
+		send(http.MethodGet, "/jobs/j1%3Fx%3D/evaluations", "")
+		if got.URL.Path != "/jobs/j1?x=/evaluations" || got.URL.Query().Has("x") {
+			tt.Fatalf("unexpected forward: %s", got.URL.String())
+		}
+		send(http.MethodPost, "/jobs/j1%3Fx%3D/evaluations", `{"plugins":["mock"]}`)
+		if got.URL.Path != "/jobs/j1?x=/evaluations" || got.URL.Query().Has("x") {
+			tt.Fatalf("unexpected forward: %s", got.URL.String())
+		}
+		send(http.MethodGet, "/evaluations/r1%3Fx%3D", "")
+		if got.URL.Path != "/evaluations/r1?x=" || got.URL.Query().Has("x") {
+			tt.Fatalf("unexpected forward: %s", got.URL.String())
+		}
+	})
+
 	t.Run("evaluation forces the caller's user_id", func(tt *testing.T) {
 		send(http.MethodGet, "/evaluations/r1?user_id=someone-else", "")
 		if got.URL.Path != "/evaluations/r1" || len(got.URL.Query()["user_id"]) != 1 || got.URL.Query().Get("user_id") != "owner" {

@@ -1,6 +1,8 @@
 package apis
 
 import (
+	"net/url"
+
 	"github.com/gin-gonic/gin"
 	"github.com/protengplus/proteng-bff/configs"
 )
@@ -33,7 +35,7 @@ func GetEvaluationPlugins(c *gin.Context) {
 // @Router /proteng-conductor/jobs/{id}/evaluations [get]
 func GetJobEvaluations(c *gin.Context) {
 	conductorUrl := configs.Config.ConductorUrl
-	ForwardAddParam(conductorUrl+"/jobs/"+c.Param("id")+"/evaluations", map[string]interface{}{"user_id": c.GetString("userId")})(c)
+	ForwardAddParam(conductorUrl+"/jobs/"+url.PathEscape(c.Param("id"))+"/evaluations", map[string]interface{}{"user_id": c.GetString("userId")})(c)
 }
 
 // @Summary Rerun the evaluation of a job
@@ -53,7 +55,7 @@ func GetJobEvaluations(c *gin.Context) {
 // @Router /proteng-conductor/jobs/{id}/evaluations [post]
 func RerunEvaluation(c *gin.Context) {
 	conductorUrl := configs.Config.ConductorUrl
-	ForwardAddBody(conductorUrl+"/jobs/"+c.Param("id")+"/evaluations", map[string]interface{}{"user_id": c.GetString("userId")})(c)
+	ForwardAddBody(conductorUrl+"/jobs/"+url.PathEscape(c.Param("id"))+"/evaluations", map[string]interface{}{"user_id": c.GetString("userId")})(c)
 }
 
 // @Summary Get an evaluation run
@@ -70,5 +72,5 @@ func RerunEvaluation(c *gin.Context) {
 // @Router /proteng-conductor/evaluations/{id} [get]
 func GetEvaluation(c *gin.Context) {
 	conductorUrl := configs.Config.ConductorUrl
-	ForwardAddParam(conductorUrl+"/evaluations/"+c.Param("id"), map[string]interface{}{"user_id": c.GetString("userId")})(c)
+	ForwardAddParam(conductorUrl+"/evaluations/"+url.PathEscape(c.Param("id")), map[string]interface{}{"user_id": c.GetString("userId")})(c)
 }
