@@ -9,19 +9,20 @@ type CreateJobInput struct {
 	QueryResult CopyQueryResultInput `bson:"query_result" json:"query_result"`
 }
 type JobInput struct {
-	Name             string                 `bson:"name" json:"name" validate:"required"`
-	StageId          int                    `bson:"stage_id" json:"stage_id" validate:"gte=0,lte=3"`
-	RefJobId         string                 `bson:"ref_job_id" json:"ref_job_id"`
-	AssayTypeId      string                 `bson:"assay_type_id" json:"assay_type_id" validate:"required"`
-	LibraryResultIds []string               `bson:"library_result_ids" json:"library_result_ids"`
-	LabResult        LabResult              `bson:"lab_result" json:"lab_result"`
-	Options          map[string]interface{} `bson:"options" json:"options" validate:"required"`
-	Artifacts        map[string]interface{} `bson:"artifact" json:"artifact"`
-	Meta             []string               `bson:"meta" json:"meta"`
-	InputProtein     string                 `bson:"input_protein" json:"input_protein" validate:"required"`
-	RunType          string                 `bson:"run_type" json:"run_type" validate:"required"`
-	Description      string                 `bson:"description" json:"description"`
-	IsNotificationOn bool                   `bson:"is_notification_on" json:"is_notification_on"`
+	Name              string                 `bson:"name" json:"name" validate:"required"`
+	StageId           int                    `bson:"stage_id" json:"stage_id" validate:"gte=0,lte=3"`
+	RefJobId          string                 `bson:"ref_job_id" json:"ref_job_id"`
+	AssayTypeId       string                 `bson:"assay_type_id" json:"assay_type_id" validate:"required"`
+	LibraryResultIds  []string               `bson:"library_result_ids" json:"library_result_ids"`
+	LabResult         LabResult              `bson:"lab_result" json:"lab_result"`
+	Options           map[string]interface{} `bson:"options" json:"options" validate:"required"`
+	Artifacts         map[string]interface{} `bson:"artifact" json:"artifact"`
+	Meta              []string               `bson:"meta" json:"meta"`
+	InputProtein      string                 `bson:"input_protein" json:"input_protein" validate:"required"`
+	RunType           string                 `bson:"run_type" json:"run_type" validate:"required"`
+	Description       string                 `bson:"description" json:"description"`
+	IsNotificationOn  bool                   `bson:"is_notification_on" json:"is_notification_on"`
+	EvaluationPlugins []string               `bson:"evaluation_plugins" json:"evaluation_plugins"`
 }
 
 type CopyQueryResultInput struct {
@@ -59,18 +60,19 @@ type LabResult struct {
 }
 
 type ConfigurationInput struct {
-	RefJobId         string                 `bson:"ref_job_id" json:"ref_job_id" validate:"required"`
-	AssayTypeId      string                 `bson:"assay_type_id" json:"assay_type_id"`
-	State            string                 `bson:"state" json:"state"`
-	StageId          int                    `bson:"stage_id" json:"stage_id" validate:"gte=0,lte=3"`
-	Name             string                 `bson:"name" json:"name" validate:"required"`
-	UserId           string                 `bson:"user_id" json:"user_id" validate:"required"`
-	LabResult        LabResult              `bson:"lab_result" json:"lab_result"`
-	Options          map[string]interface{} `bson:"options" json:"options" validate:"required"`
-	Artifacts        map[string]interface{} `bson:"artifact" json:"artifact"`
-	Meta             []string               `bson:"meta" json:"meta"`
-	InputProtein     string                 `bson:"input_protein" json:"input_protein" validate:"required"`
-	RunType          string                 `bson:"run_type" json:"run_type" validate:"required"`
-	Description      string                 `bson:"description" json:"description"`
-	IsNotificationOn bool                   `bson:"is_notification_on" json:"is_notification_on"`
+	RefJobId          string                 `bson:"ref_job_id" json:"ref_job_id" validate:"required"`
+	AssayTypeId       string                 `bson:"assay_type_id" json:"assay_type_id"`
+	State             string                 `bson:"state" json:"state"`
+	StageId           int                    `bson:"stage_id" json:"stage_id" validate:"gte=0,lte=3"`
+	Name              string                 `bson:"name" json:"name" validate:"required"`
+	UserId            string                 `bson:"user_id" json:"user_id" validate:"required"`
+	LabResult         LabResult              `bson:"lab_result" json:"lab_result"`
+	Options           map[string]interface{} `bson:"options" json:"options" validate:"required"`
+	Artifacts         map[string]interface{} `bson:"artifact" json:"artifact"`
+	Meta              []string               `bson:"meta" json:"meta"`
+	InputProtein      string                 `bson:"input_protein" json:"input_protein" validate:"required"`
+	RunType           string                 `bson:"run_type" json:"run_type" validate:"required"`
+	Description       string                 `bson:"description" json:"description"`
+	IsNotificationOn  bool                   `bson:"is_notification_on" json:"is_notification_on"`
+	EvaluationPlugins []string               `bson:"evaluation_plugins" json:"evaluation_plugins"`
 }

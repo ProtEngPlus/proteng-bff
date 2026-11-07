@@ -36,6 +36,10 @@ definitions:
         type: string
       description:
         type: string
+      evaluation_plugins:
+        items:
+          type: string
+        type: array
       input_protein:
         type: string
       is_notification_on:
@@ -174,6 +178,10 @@ definitions:
         type: string
       description:
         type: string
+      evaluation_plugins:
+        items:
+          type: string
+        type: array
       input_protein:
         type: string
       is_notification_on:
@@ -252,6 +260,17 @@ definitions:
         type: boolean
       job_id:
         type: string
+    type: object
+  models.RerunEvaluationInput:
+    properties:
+      mutation_id:
+        type: string
+      plugins:
+        items:
+          type: string
+        type: array
+    required:
+    - plugins
     type: object
   models.ResetPasswordInput:
     properties:
@@ -626,6 +645,67 @@ paths:
       summary: List library jobs
       tags:
       - Assay Types
+  /proteng-conductor/evaluation-plugins:
+    get:
+      description: Retrieve the names of the evaluation plugins a job can use
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get evaluation plugins
+      tags:
+      - Evaluations
+  /proteng-conductor/evaluations/{id}:
+    get:
+      description: Retrieve an evaluation run of the current user with its results
+        grouped by mutant
+      parameters:
+      - description: EvaluationRun ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get an evaluation run
+      tags:
+      - Evaluations
   /proteng-conductor/jobs:
     get:
       description: Retrieve a list of all jobs
@@ -796,6 +876,94 @@ paths:
       summary: Update an existing job
       tags:
       - Jobs
+  /proteng-conductor/jobs/{id}/evaluations:
+    get:
+      description: Retrieve the evaluation runs of a job of the current user, newest
+        first
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get the evaluation runs of a job
+      tags:
+      - Evaluations
+    post:
+      consumes:
+      - application/json
+      description: Evaluate a completed mutation run of a completed job again with
+        the given plugins. Without mutation_id the latest completed mutation run is
+        used.
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Rerun object
+        in: body
+        name: evaluation
+        required: true
+        schema:
+          $ref: '#/definitions/models.RerunEvaluationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Rerun the evaluation of a job
+      tags:
+      - Evaluations
   /proteng-conductor/jobs/{id}/run:
     post:
       description: Start a job by its ID
@@ -1402,32 +1570,26 @@ paths:
         name: organism
         type: string
       - description: Filter by percentIdentityFrom
-        format: float64
         in: query
         name: percentIdentityFrom
         type: number
       - description: Filter by percentIdentityTo
-        format: float64
         in: query
         name: percentIdentityTo
         type: number
       - description: Filter by eValuesFrom
-        format: float64
         in: query
         name: eValuesFrom
         type: number
       - description: Filter by eValuesTo
-        format: float64
         in: query
         name: eValuesTo
         type: number
       - description: Filter by queryCoverFrom
-        format: float64
         in: query
         name: queryCoverFrom
         type: number
       - description: Filter by queryCoverTo
-        format: float64
         in: query
         name: queryCoverTo
         type: number

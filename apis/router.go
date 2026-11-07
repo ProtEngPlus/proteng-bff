@@ -75,6 +75,11 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.GET("/assay-types/:id/library", middleware.Authenticate(), middleware.Authorize("user"), GetLibraryResults)
 	conductorRouter.GET("/assay-types/:id/library/export", middleware.Authenticate(), middleware.Authorize("user"), ExportLibrary)
 
+	conductorRouter.GET("/evaluation-plugins", middleware.Authenticate(), middleware.Authorize("user"), GetEvaluationPlugins)
+	conductorRouter.GET("/jobs/:id/evaluations", middleware.Authenticate(), middleware.Authorize("user"), GetJobEvaluations)
+	conductorRouter.POST("/jobs/:id/evaluations", middleware.Authenticate(), middleware.Authorize("user"), RerunEvaluation)
+	conductorRouter.GET("/evaluations/:id", middleware.Authenticate(), middleware.Authorize("user"), GetEvaluation)
+
 	conductorRouter.GET("/artifact/:bucketName/:objectName", middleware.Authenticate(), middleware.Authorize("user"), DownloadArtifact)
 
 	conductorRouter.GET("/uniProt/:uniProtId", middleware.Authenticate(), middleware.Authorize("user"), GetProteinSequenceFromId)
