@@ -24,6 +24,7 @@ func InitRouter(r *gin.Engine) {
 	userRouter.POST("/auth/refresh", RefreshSession)
 	userRouter.POST("/auth/logout", Logout)
 	userRouter.POST("/auth/forgotpassword", ForgotPassword)
+	userRouter.GET("/auth/resetpassword/:resetToken", CheckResetToken)
 	userRouter.PATCH("/auth/resetpassword/:resetToken", ResetPassword)
 	userRouter.PATCH("/auth/changepassword", middleware.Authenticate(), ChangePassword)
 	userRouter.POST("/auth/sendverification", SendVerification)

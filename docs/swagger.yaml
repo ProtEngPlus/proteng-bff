@@ -2116,6 +2116,29 @@ paths:
       tags:
       - Authentication
   /proteng-user-mgmt/auth/resetpassword/{resetToken}:
+    get:
+      description: Checks whether a reset token can still be used, without changing
+        anything
+      parameters:
+      - description: Reset Token
+        in: path
+        name: resetToken
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token is valid
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Token is invalid or has expired
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Check reset token
+      tags:
+      - Authentication
     patch:
       consumes:
       - application/json
