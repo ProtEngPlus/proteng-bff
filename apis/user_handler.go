@@ -6,40 +6,6 @@ import (
 	"github.com/protengplus/proteng-bff/utils/apiutil"
 )
 
-// GetAllUsers retrieves all users
-// @Summary Retrieve all users
-// @Description Retrieve a list of all users
-// @Tags User management
-// @Produce json
-// @Security ApiKeyAuth
-// @Success 200 {object} models.HttpResponseOK "Successful operation"
-// @Failure 401 {object} models.HttpResponseError "Unauthorized"
-// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
-// @Router /proteng-user-mgmt/users [get]
-func GetAllUsers(c *gin.Context) {
-	usermgmtUrl := configs.Config.UserMgmtUrl
-	Forward(usermgmtUrl + "/users")(c)
-}
-
-// GetUserByID retrieves a user by ID
-// @Summary Retrieve a user by ID
-// @Description Retrieve a user by providing its ID
-// @Tags User management
-// @Produce json
-// @Security ApiKeyAuth
-// @Param id path string true "User ID"
-// @Success 200 {object} models.HttpResponseOK "Successful operation"
-// @Failure 400 {object} models.HttpResponseError "Bad request"
-// @Failure 401 {object} models.HttpResponseError "Unauthorized"
-// @Failure 404 {object} models.HttpResponseError "Not found"
-// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
-// @Router /proteng-user-mgmt/users/{id} [get]
-func GetUserByID(c *gin.Context) {
-	// Forward the request to the appropriate endpoint
-	usermgmtUrl := configs.Config.UserMgmtUrl
-	Forward(usermgmtUrl + "/users/" + c.Param("id"))(c)
-}
-
 // RegisterUser registers a new user and sends the verification email
 // @Summary Register a new user
 // @Description Creates a new user and sends a verification email in a single call
@@ -56,43 +22,6 @@ func GetUserByID(c *gin.Context) {
 func RegisterUser(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	Forward(usermgmtUrl + "/auth/register")(c)
-}
-
-// UpdateUser updates an existing user
-// @Summary Update an existing user
-// @Description Update an existing user with the provided details
-// @Tags User management
-// @Accept json
-// @Produce json
-// @Param id path string true "User ID"
-// @Param user body models.UserInput true "User object"
-// @Security ApiKeyAuth
-// @Success 200 {object} models.HttpResponseOK "Successful operation"
-// @Failure 400 {object} models.HttpResponseError "Bad request"
-// @Failure 401 {object} models.HttpResponseError "Unauthorized"
-// @Failure 404 {object} models.HttpResponseError "Not found"
-// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
-// @Router /proteng-user-mgmt/users/{id} [put]
-func UpdateUser(c *gin.Context) {
-	usermgmtUrl := configs.Config.UserMgmtUrl
-	Forward(usermgmtUrl + "/users/" + c.Param("id"))(c)
-}
-
-// DeleteUser deletes a user by ID
-// @Summary Delete a user
-// @Description Delete a user by providing its ID
-// @Tags User management
-// @Produce json
-// @Param id path string true "User ID"
-// @Security ApiKeyAuth
-// @Success 200 {object} models.HttpResponseOK "Successful operation"
-// @Failure 401 {object} models.HttpResponseError "Unauthorized"
-// @Failure 404 {object} models.HttpResponseError "Not found"
-// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
-// @Router /proteng-user-mgmt/users/{id} [delete]
-func DeleteUser(c *gin.Context) {
-	usermgmtUrl := configs.Config.UserMgmtUrl
-	Forward(usermgmtUrl + "/users/" + c.Param("id"))(c)
 }
 
 // SignInUser signs in a user by validating credentials
