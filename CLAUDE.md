@@ -18,7 +18,7 @@ API gateway of ProtEngPlus (Go, Gin). The frontend calls only this service; it c
 
 ## Rules
 
-- Every new route gets `middleware.Authenticate()` and the right `Authorize(...)` unless it must work without login (sign up, login, password reset, email verification). `POST /proteng-user-mgmt/admins` is currently open and is a known security issue; do not copy that pattern.
+- Every new route gets `middleware.Authenticate()` and the right `Authorize(...)` unless it must work without login (sign up, login, password reset, email verification).
 - `ACCESS_TOKEN_PUBLIC_KEY` must pair with user-mgmt's `ACCESS_TOKEN_PRIVATE_KEY` of the same environment. Base64 values must not contain CR.
 - New Go functions need a test in a `_test.go` file of the same package, in the same commit.
 - A push to `dev` deploys dev and a push to `main` deploys production, even for docs-only changes.
