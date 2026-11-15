@@ -10,11 +10,6 @@ func InitRouter(r *gin.Engine) {
 	userRouter := r.Group("/proteng-user-mgmt")
 	// usermgmtUrl := configs.Config.UserMgmtUrl
 
-	userRouter.GET("/users", middleware.Authenticate(), middleware.Authorize("admin"), GetAllUsers)
-	userRouter.GET("/users/:id", middleware.Authenticate(), middleware.Authorize("admin"), GetUserByID)
-	userRouter.PUT("/users/:id", middleware.Authenticate(), middleware.Authorize("admin"), UpdateUser)
-	userRouter.DELETE("/users/:id", middleware.Authenticate(), middleware.Authorize("admin"), DeleteUser)
-
 	userRouter.GET("/me", middleware.Authenticate(), GetMe)
 	userRouter.PUT("/me", middleware.Authenticate(), UpdateMe)
 	userRouter.DELETE("/me", middleware.Authenticate(), DeleteMe)
@@ -29,13 +24,6 @@ func InitRouter(r *gin.Engine) {
 	userRouter.PATCH("/auth/changepassword", middleware.Authenticate(), ChangePassword)
 	userRouter.POST("/auth/sendverification", SendVerification)
 	userRouter.POST("/auth/verifyemail/:verificationToken", VerifyEmail)
-
-	userRouter.GET("/admins", middleware.Authenticate(), middleware.Authorize("admin"), GetAllAdmins)
-	userRouter.GET("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), GetAdminByID)
-	userRouter.POST("/admins", CreateAdmin)
-	userRouter.PUT("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), UpdateAdmin)
-	userRouter.DELETE("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), DeleteAdmin)
-	userRouter.POST("/auth/login/admin", SignInAdmin)
 
 	conductorRouter := r.Group("/proteng-conductor")
 	// conductorUrl := configs.Config.ConductorUrl
