@@ -1,12 +1,12 @@
 definitions:
-  models.AdminInput:
+  models.AssayTypeInput:
     properties:
-      email:
+      description:
         type: string
-      password:
+      name:
         type: string
-      username:
-        type: string
+    required:
+    - name
     type: object
   models.ChangePasswordInput:
     properties:
@@ -23,8 +23,14 @@ definitions:
       artifact:
         additionalProperties: true
         type: object
+      assay_type_id:
+        type: string
       description:
         type: string
+      evaluation_plugins:
+        items:
+          type: string
+        type: array
       input_protein:
         type: string
       is_notification_on:
@@ -159,14 +165,24 @@ definitions:
       artifact:
         additionalProperties: true
         type: object
+      assay_type_id:
+        type: string
       description:
         type: string
+      evaluation_plugins:
+        items:
+          type: string
+        type: array
       input_protein:
         type: string
       is_notification_on:
         type: boolean
       lab_result:
         $ref: '#/definitions/models.LabResult'
+      library_result_ids:
+        items:
+          type: string
+        type: array
       meta:
         items:
           type: string
@@ -185,6 +201,7 @@ definitions:
         minimum: 0
         type: integer
     required:
+    - assay_type_id
     - input_protein
     - name
     - options
@@ -197,6 +214,10 @@ definitions:
           type: number
         type: array
       sequences:
+        items:
+          type: string
+        type: array
+      sources:
         items:
           type: string
         type: array
@@ -231,6 +252,17 @@ definitions:
       job_id:
         type: string
     type: object
+  models.RerunEvaluationInput:
+    properties:
+      mutation_id:
+        type: string
+      plugins:
+        items:
+          type: string
+        type: array
+    required:
+    - plugins
+    type: object
   models.ResetPasswordInput:
     properties:
       password:
@@ -244,16 +276,6 @@ definitions:
         type: string
     required:
     - email
-    type: object
-  models.SignInAdminInput:
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-    required:
-    - email
-    - password
     type: object
   models.SignInInput:
     properties:
@@ -336,6 +358,335 @@ paths:
       summary: Download Artifact
       tags:
       - Artifact
+  /proteng-conductor/assay-types:
+    get:
+      description: Retrieve the assay types of the current user with job and result
+        counts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all assay types
+      tags:
+      - Assay Types
+    post:
+      consumes:
+      - application/json
+      description: Create a reusable assay score type
+      parameters:
+      - description: Assay type object
+        in: body
+        name: assayType
+        required: true
+        schema:
+          $ref: '#/definitions/models.AssayTypeInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "409":
+          description: Name already exists
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create an assay type
+      tags:
+      - Assay Types
+  /proteng-conductor/assay-types/{id}:
+    delete:
+      description: Delete an assay type that no job or result uses
+      parameters:
+      - description: Assay type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "409":
+          description: Assay type is in use
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete an assay type
+      tags:
+      - Assay Types
+    get:
+      description: Retrieve one assay type of the current user
+      parameters:
+      - description: Assay type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get an assay type
+      tags:
+      - Assay Types
+    put:
+      consumes:
+      - application/json
+      description: Rename an assay type or change its description
+      parameters:
+      - description: Assay type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Assay type object
+        in: body
+        name: assayType
+        required: true
+        schema:
+          $ref: '#/definitions/models.AssayTypeInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "409":
+          description: Name already exists
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update an assay type
+      tags:
+      - Assay Types
+  /proteng-conductor/assay-types/{id}/library:
+    get:
+      description: Deduplicated wet-lab results of one job for this assay type
+      parameters:
+      - description: Assay type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Job ID
+        in: query
+        name: job_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: List library results of a job
+      tags:
+      - Assay Types
+  /proteng-conductor/assay-types/{id}/library/export:
+    get:
+      description: Headerless sequence,score csv of all or the given library results
+      parameters:
+      - description: Assay type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Comma separated result IDs
+        in: query
+        name: ids
+        type: string
+      produces:
+      - text/csv
+      responses:
+        "200":
+          description: csv file
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Nothing to export
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Export the library as csv
+      tags:
+      - Assay Types
+  /proteng-conductor/assay-types/{id}/library/jobs:
+    get:
+      description: Jobs that have wet-lab results of this assay type, newest first
+      parameters:
+      - description: Assay type ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Filter by job name
+        in: query
+        name: q
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: List library jobs
+      tags:
+      - Assay Types
+  /proteng-conductor/evaluation-plugins:
+    get:
+      description: Retrieve the names of the evaluation plugins a job can use
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get evaluation plugins
+      tags:
+      - Evaluations
+  /proteng-conductor/evaluations/{id}:
+    get:
+      description: Retrieve an evaluation run of the current user with its results
+        grouped by mutant
+      parameters:
+      - description: EvaluationRun ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get an evaluation run
+      tags:
+      - Evaluations
   /proteng-conductor/jobs:
     get:
       description: Retrieve a list of all jobs
@@ -506,6 +857,94 @@ paths:
       summary: Update an existing job
       tags:
       - Jobs
+  /proteng-conductor/jobs/{id}/evaluations:
+    get:
+      description: Retrieve the evaluation runs of a job of the current user, newest
+        first
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get the evaluation runs of a job
+      tags:
+      - Evaluations
+    post:
+      consumes:
+      - application/json
+      description: Evaluate a completed mutation run of a completed job again with
+        the given plugins. Without mutation_id the latest completed mutation run is
+        used.
+      parameters:
+      - description: Job ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Rerun object
+        in: body
+        name: evaluation
+        required: true
+        schema:
+          $ref: '#/definitions/models.RerunEvaluationInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Rerun the evaluation of a job
+      tags:
+      - Evaluations
   /proteng-conductor/jobs/{id}/run:
     post:
       description: Start a job by its ID
@@ -962,6 +1401,35 @@ paths:
       summary: Create or overwrite an experimental result
       tags:
       - Experimental Results
+  /proteng-conductor/mutations/experimental-results/export:
+    get:
+      description: Headerless sequence,score csv that the Upload Lab Input step accepts
+      parameters:
+      - description: Job ID
+        in: query
+        name: job_id
+        required: true
+        type: string
+      produces:
+      - text/csv
+      responses:
+        "200":
+          description: csv file
+          schema:
+            type: string
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "404":
+          description: Nothing to export
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      security:
+      - ApiKeyAuth: []
+      summary: Export a job's wet-lab results as csv
+      tags:
+      - Experimental Results
   /proteng-conductor/mutations/histograms:
     get:
       description: Retrieve a list of histograms from all mutations
@@ -1083,26 +1551,32 @@ paths:
         name: organism
         type: string
       - description: Filter by percentIdentityFrom
+        format: float64
         in: query
         name: percentIdentityFrom
         type: number
       - description: Filter by percentIdentityTo
+        format: float64
         in: query
         name: percentIdentityTo
         type: number
       - description: Filter by eValuesFrom
+        format: float64
         in: query
         name: eValuesFrom
         type: number
       - description: Filter by eValuesTo
+        format: float64
         in: query
         name: eValuesTo
         type: number
       - description: Filter by queryCoverFrom
+        format: float64
         in: query
         name: queryCoverFrom
         type: number
       - description: Filter by queryCoverTo
+        format: float64
         in: query
         name: queryCoverTo
         type: number
@@ -1265,176 +1739,11 @@ paths:
       summary: Get Protein Sequence From Id
       tags:
       - UniProt
-  /proteng-user-mgmt/admins:
-    get:
-      description: Retrieve a list of all admins
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      security:
-      - ApiKeyAuth: []
-      summary: Retrieve all admins
-      tags:
-      - Admin
-    post:
-      consumes:
-      - application/json
-      description: Creates a new admin with the provided details
-      parameters:
-      - description: Admin object
-        in: body
-        name: admin
-        required: true
-        schema:
-          $ref: '#/definitions/models.AdminInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      summary: Create a new admin
-      tags:
-      - Admin
-  /proteng-user-mgmt/admins/{id}:
-    delete:
-      description: Delete an admin by providing its ID
-      parameters:
-      - description: Admin ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "404":
-          description: Not found
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      security:
-      - ApiKeyAuth: []
-      summary: Delete an admin
-      tags:
-      - Admin
-    get:
-      description: Retrieve an admin by providing its ID
-      parameters:
-      - description: Admin ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "404":
-          description: Not found
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      security:
-      - ApiKeyAuth: []
-      summary: Retrieve an admin by ID
-      tags:
-      - Admin
-    put:
-      consumes:
-      - application/json
-      description: Update an existing admin with the provided details
-      parameters:
-      - description: Admin ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Admin object
-        in: body
-        name: admin
-        required: true
-        schema:
-          $ref: '#/definitions/models.AdminInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "404":
-          description: Not found
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      security:
-      - ApiKeyAuth: []
-      summary: Update an existing admin
-      tags:
-      - Admin
   /proteng-user-mgmt/auth/changepassword:
     patch:
       consumes:
       - application/json
-      description: Changes the password while logged in
+      description: Changes the password while logged in and signs out every session
       parameters:
       - description: User credentials
         in: body
@@ -1525,18 +1834,9 @@ paths:
       summary: Sign in a user
       tags:
       - Authentication
-  /proteng-user-mgmt/auth/login/admin:
+  /proteng-user-mgmt/auth/logout:
     post:
-      consumes:
-      - application/json
-      description: Signs in an admin by validating the provided credentials
-      parameters:
-      - description: Admin credentials
-        in: body
-        name: credentials
-        required: true
-        schema:
-          $ref: '#/definitions/models.SignInAdminInput'
+      description: Revokes the refresh token and clears the auth cookies
       produces:
       - application/json
       responses:
@@ -1544,11 +1844,33 @@ paths:
           description: Successful operation
           schema:
             $ref: '#/definitions/models.HttpResponseOK'
-        "400":
-          description: Bad request
+      summary: Log out
+      tags:
+      - Authentication
+  /proteng-user-mgmt/auth/refresh:
+    post:
+      description: Exchanges the refresh token cookie for new access and refresh token
+        cookies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "401":
+          description: Session expired
           schema:
             $ref: '#/definitions/models.HttpResponseError'
-      summary: Sign in an admin
+        "409":
+          description: Session already refreshed by another request
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Refresh session
       tags:
       - Authentication
   /proteng-user-mgmt/auth/register:
@@ -1590,10 +1912,34 @@ paths:
       tags:
       - Authentication
   /proteng-user-mgmt/auth/resetpassword/{resetToken}:
+    get:
+      description: Checks whether a reset token can still be used, without changing
+        anything
+      parameters:
+      - description: Reset Token
+        in: path
+        name: resetToken
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Token is valid
+          schema:
+            $ref: '#/definitions/models.HttpResponseOK'
+        "400":
+          description: Token is invalid or has expired
+          schema:
+            $ref: '#/definitions/models.HttpResponseError'
+      summary: Check reset token
+      tags:
+      - Authentication
     patch:
       consumes:
       - application/json
-      description: Resets the password using the provided reset token
+      description: Resets the password using the provided reset token and signs out
+        every session
       parameters:
       - description: Reset Token
         in: path
@@ -1779,142 +2125,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update the currently authenticated user
-      tags:
-      - User management
-  /proteng-user-mgmt/users:
-    get:
-      description: Retrieve a list of all users
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      security:
-      - ApiKeyAuth: []
-      summary: Retrieve all users
-      tags:
-      - User management
-  /proteng-user-mgmt/users/{id}:
-    delete:
-      description: Delete a user by providing its ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "404":
-          description: Not found
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      security:
-      - ApiKeyAuth: []
-      summary: Delete a user
-      tags:
-      - User management
-    get:
-      description: Retrieve a user by providing its ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "404":
-          description: Not found
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      security:
-      - ApiKeyAuth: []
-      summary: Retrieve a user by ID
-      tags:
-      - User management
-    put:
-      consumes:
-      - application/json
-      description: Update an existing user with the provided details
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: User object
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/models.UserInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successful operation
-          schema:
-            $ref: '#/definitions/models.HttpResponseOK'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "404":
-          description: Not found
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.HttpResponseError'
-      security:
-      - ApiKeyAuth: []
-      summary: Update an existing user
       tags:
       - User management
 securityDefinitions:

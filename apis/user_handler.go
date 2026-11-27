@@ -3,41 +3,8 @@ package apis
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/protengplus/proteng-bff/configs"
+	"github.com/protengplus/proteng-bff/utils/apiutil"
 )
-
-// GetAllUsers retrieves all users
-// @Summary Retrieve all users
-// @Description Retrieve a list of all users
-// @Tags User management
-// @Produce json
-// @Security ApiKeyAuth
-// @Success 200 {object} models.HttpResponseOK "Successful operation"
-// @Failure 401 {object} models.HttpResponseError "Unauthorized"
-// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
-// @Router /proteng-user-mgmt/users [get]
-func GetAllUsers(c *gin.Context) {
-	usermgmtUrl := configs.Config.UserMgmtUrl
-	Forward(usermgmtUrl + "/users")(c)
-}
-
-// GetUserByID retrieves a user by ID
-// @Summary Retrieve a user by ID
-// @Description Retrieve a user by providing its ID
-// @Tags User management
-// @Produce json
-// @Security ApiKeyAuth
-// @Param id path string true "User ID"
-// @Success 200 {object} models.HttpResponseOK "Successful operation"
-// @Failure 400 {object} models.HttpResponseError "Bad request"
-// @Failure 401 {object} models.HttpResponseError "Unauthorized"
-// @Failure 404 {object} models.HttpResponseError "Not found"
-// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
-// @Router /proteng-user-mgmt/users/{id} [get]
-func GetUserByID(c *gin.Context) {
-	// Forward the request to the appropriate endpoint
-	usermgmtUrl := configs.Config.UserMgmtUrl
-	Forward(usermgmtUrl + "/users/" + c.Param("id"))(c)
-}
 
 // RegisterUser registers a new user and sends the verification email
 // @Summary Register a new user
@@ -57,43 +24,6 @@ func RegisterUser(c *gin.Context) {
 	Forward(usermgmtUrl + "/auth/register")(c)
 }
 
-// UpdateUser updates an existing user
-// @Summary Update an existing user
-// @Description Update an existing user with the provided details
-// @Tags User management
-// @Accept json
-// @Produce json
-// @Param id path string true "User ID"
-// @Param user body models.UserInput true "User object"
-// @Security ApiKeyAuth
-// @Success 200 {object} models.HttpResponseOK "Successful operation"
-// @Failure 400 {object} models.HttpResponseError "Bad request"
-// @Failure 401 {object} models.HttpResponseError "Unauthorized"
-// @Failure 404 {object} models.HttpResponseError "Not found"
-// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
-// @Router /proteng-user-mgmt/users/{id} [put]
-func UpdateUser(c *gin.Context) {
-	usermgmtUrl := configs.Config.UserMgmtUrl
-	Forward(usermgmtUrl + "/users/" + c.Param("id"))(c)
-}
-
-// DeleteUser deletes a user by ID
-// @Summary Delete a user
-// @Description Delete a user by providing its ID
-// @Tags User management
-// @Produce json
-// @Param id path string true "User ID"
-// @Security ApiKeyAuth
-// @Success 200 {object} models.HttpResponseOK "Successful operation"
-// @Failure 401 {object} models.HttpResponseError "Unauthorized"
-// @Failure 404 {object} models.HttpResponseError "Not found"
-// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
-// @Router /proteng-user-mgmt/users/{id} [delete]
-func DeleteUser(c *gin.Context) {
-	usermgmtUrl := configs.Config.UserMgmtUrl
-	Forward(usermgmtUrl + "/users/" + c.Param("id"))(c)
-}
-
 // SignInUser signs in a user by validating credentials
 // @Summary Sign in a user
 // @Description Signs in a user by validating the provided credentials
@@ -106,7 +36,36 @@ func DeleteUser(c *gin.Context) {
 // @Router /proteng-user-mgmt/auth/login [post]
 func SignInUser(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
-	Forward(usermgmtUrl + "/auth/login")(c)
+	ForwardIssuingSession(usermgmtUrl + "/auth/login")(c)
+}
+
+// RefreshSession exchanges the refresh token cookie for new token cookies
+// @Summary Refresh session
+// @Description Exchanges the refresh token cookie for new access and refresh token cookies
+// @Tags Authentication
+// @Produce json
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Failure 401 {object} models.HttpResponseError "Session expired"
+// @Failure 409 {object} models.HttpResponseError "Session already refreshed by another request"
+// @Failure 500 {object} models.HttpResponseError "Internal Server Error"
+// @Router /proteng-user-mgmt/auth/refresh [post]
+func RefreshSession(c *gin.Context) {
+	usermgmtUrl := configs.Config.UserMgmtUrl
+	forwardRefresh(c, usermgmtUrl+"/auth/refresh")
+}
+
+// Logout ends the browser session
+// @Summary Log out
+// @Description Revokes the refresh token and clears the auth cookies
+// @Tags Authentication
+// @Produce json
+// @Success 200 {object} models.HttpResponseOK "Successful operation"
+// @Router /proteng-user-mgmt/auth/logout [post]
+func Logout(c *gin.Context) {
+	usermgmtUrl := configs.Config.UserMgmtUrl
+	revokeRefreshToken(c, usermgmtUrl+"/auth/logout")
+	clearAuthCookies(c)
+	apiutil.ApiResponseOk(c, nil, "Logged out")
 }
 
 // @Summary Get current user
@@ -180,7 +139,7 @@ func ForgotPassword(c *gin.Context) {
 
 // ResetPassword resets the password using the provided reset token
 // @Summary Reset password
-// @Description Resets the password using the provided reset token
+// @Description Resets the password using the provided reset token and signs out every session
 // @Tags Authentication
 // @Accept json
 // @Produce json
@@ -193,12 +152,27 @@ func ForgotPassword(c *gin.Context) {
 func ResetPassword(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	resetToken := c.Param("resetToken")
+	ForwardEndingSession(usermgmtUrl + "/auth/resetpassword/" + resetToken)(c)
+}
+
+// CheckResetToken checks a reset token without using it
+// @Summary Check reset token
+// @Description Checks whether a reset token can still be used, without changing anything
+// @Tags Authentication
+// @Produce json
+// @Param resetToken path string true "Reset Token"
+// @Success 200 {object} models.HttpResponseOK "Token is valid"
+// @Failure 400 {object} models.HttpResponseError "Token is invalid or has expired"
+// @Router /proteng-user-mgmt/auth/resetpassword/{resetToken} [get]
+func CheckResetToken(c *gin.Context) {
+	usermgmtUrl := configs.Config.UserMgmtUrl
+	resetToken := c.Param("resetToken")
 	Forward(usermgmtUrl + "/auth/resetpassword/" + resetToken)(c)
 }
 
 // ChangePassword changes the password while logged in
 // @Summary change password
-// @Description Changes the password while logged in
+// @Description Changes the password while logged in and signs out every session
 // @Tags Authentication
 // @Accept json
 // @Produce json
@@ -211,7 +185,7 @@ func ResetPassword(c *gin.Context) {
 func ChangePassword(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	userID := c.GetString("userId")
-	Forward(usermgmtUrl + "/auth/changepassword/" + userID)(c)
+	ForwardEndingSession(usermgmtUrl + "/auth/changepassword/" + userID)(c)
 }
 
 // SendVerification initiates the email verification process by sending a verification email to the user
@@ -246,5 +220,5 @@ func SendVerification(c *gin.Context) {
 func VerifyEmail(c *gin.Context) {
 	usermgmtUrl := configs.Config.UserMgmtUrl
 	verificationToken := c.Param("verificationToken")
-	Forward(usermgmtUrl + "/auth/verifyemail/" + verificationToken)(c)
+	ForwardIssuingSession(usermgmtUrl + "/auth/verifyemail/" + verificationToken)(c)
 }

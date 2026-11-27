@@ -10,29 +10,20 @@ func InitRouter(r *gin.Engine) {
 	userRouter := r.Group("/proteng-user-mgmt")
 	// usermgmtUrl := configs.Config.UserMgmtUrl
 
-	userRouter.GET("/users", middleware.Authenticate(), middleware.Authorize("admin"), GetAllUsers)
-	userRouter.GET("/users/:id", middleware.Authenticate(), middleware.Authorize("admin"), GetUserByID)
-	userRouter.PUT("/users/:id", middleware.Authenticate(), middleware.Authorize("admin"), UpdateUser)
-	userRouter.DELETE("/users/:id", middleware.Authenticate(), middleware.Authorize("admin"), DeleteUser)
-
 	userRouter.GET("/me", middleware.Authenticate(), GetMe)
 	userRouter.PUT("/me", middleware.Authenticate(), UpdateMe)
 	userRouter.DELETE("/me", middleware.Authenticate(), DeleteMe)
 
 	userRouter.POST("/auth/register", RegisterUser)
 	userRouter.POST("/auth/login", SignInUser)
+	userRouter.POST("/auth/refresh", RefreshSession)
+	userRouter.POST("/auth/logout", Logout)
 	userRouter.POST("/auth/forgotpassword", ForgotPassword)
+	userRouter.GET("/auth/resetpassword/:resetToken", CheckResetToken)
 	userRouter.PATCH("/auth/resetpassword/:resetToken", ResetPassword)
 	userRouter.PATCH("/auth/changepassword", middleware.Authenticate(), ChangePassword)
 	userRouter.POST("/auth/sendverification", SendVerification)
 	userRouter.POST("/auth/verifyemail/:verificationToken", VerifyEmail)
-
-	userRouter.GET("/admins", middleware.Authenticate(), middleware.Authorize("admin"), GetAllAdmins)
-	userRouter.GET("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), GetAdminByID)
-	userRouter.POST("/admins", CreateAdmin)
-	userRouter.PUT("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), UpdateAdmin)
-	userRouter.DELETE("/admins/:id", middleware.Authenticate(), middleware.Authorize("admin"), DeleteAdmin)
-	userRouter.POST("/auth/login/admin", SignInAdmin)
 
 	conductorRouter := r.Group("/proteng-conductor")
 	// conductorUrl := configs.Config.ConductorUrl
@@ -61,6 +52,22 @@ func InitRouter(r *gin.Engine) {
 	conductorRouter.GET("/mutations/experimental-results", middleware.Authenticate(), middleware.Authorize("user"), GetAllExperimentalResults)
 	conductorRouter.PUT("/mutations/experimental-results/by-mutation-result/:mutationResultId", middleware.Authenticate(), middleware.Authorize("user"), UpsertExperimentalResult)
 	conductorRouter.DELETE("/mutations/experimental-results/by-mutation-result/:mutationResultId", middleware.Authenticate(), middleware.Authorize("user"), DeleteExperimentalResult)
+
+	conductorRouter.GET("/mutations/experimental-results/export", middleware.Authenticate(), middleware.Authorize("user"), ExportExperimentalResults)
+
+	conductorRouter.GET("/assay-types", middleware.Authenticate(), middleware.Authorize("user"), GetAllAssayTypes)
+	conductorRouter.POST("/assay-types", middleware.Authenticate(), middleware.Authorize("user"), CreateAssayType)
+	conductorRouter.GET("/assay-types/:id", middleware.Authenticate(), middleware.Authorize("user"), GetAssayType)
+	conductorRouter.PUT("/assay-types/:id", middleware.Authenticate(), middleware.Authorize("user"), UpdateAssayType)
+	conductorRouter.DELETE("/assay-types/:id", middleware.Authenticate(), middleware.Authorize("user"), DeleteAssayType)
+	conductorRouter.GET("/assay-types/:id/library/jobs", middleware.Authenticate(), middleware.Authorize("user"), GetLibraryJobs)
+	conductorRouter.GET("/assay-types/:id/library", middleware.Authenticate(), middleware.Authorize("user"), GetLibraryResults)
+	conductorRouter.GET("/assay-types/:id/library/export", middleware.Authenticate(), middleware.Authorize("user"), ExportLibrary)
+
+	conductorRouter.GET("/evaluation-plugins", middleware.Authenticate(), middleware.Authorize("user"), GetEvaluationPlugins)
+	conductorRouter.GET("/jobs/:id/evaluations", middleware.Authenticate(), middleware.Authorize("user"), GetJobEvaluations)
+	conductorRouter.POST("/jobs/:id/evaluations", middleware.Authenticate(), middleware.Authorize("user"), RerunEvaluation)
+	conductorRouter.GET("/evaluations/:id", middleware.Authenticate(), middleware.Authorize("user"), GetEvaluation)
 
 	conductorRouter.GET("/artifact/:bucketName/:objectName", middleware.Authenticate(), middleware.Authorize("user"), DownloadArtifact)
 
